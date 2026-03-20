@@ -2,24 +2,24 @@
 
 /* ── Design tokens ── */
 :root {
-  --bg:           #050508;
-  --navy:         #0D1B2E;
-  --navy-light:   #122338;
-  --border:       #1a2f4a;
-  --border-light: #243d5c;
+  --bg:           #050805;
+  --navy:         #0c160e;
+  --navy-light:   #122016;
+  --border:       #1a3020;
+  --border-light: #264832;
 
-  --text-primary:   #E8EEFF;
-  --text-secondary: #7A9ABB;
-  --text-muted:     #3A5A8A;
-  --text-dim:       #2A4A7A;
+  --text-primary:   #e8fdf0;
+  --text-secondary: #7aab8a;
+  --text-muted:     #3a6a4a;
+  --text-dim:       #254535;
 
-  --accent:       #7C6AF7;
-  --accent-dim:   rgba(124,106,247,0.12);
-  --accent-border:rgba(124,106,247,0.25);
+  --accent:       #10D980;
+  --accent-dim:   rgba(16,217,128,0.12);
+  --accent-border:rgba(16,217,128,0.28);
 
-  --success:       #4ADE80;
-  --success-dim:   rgba(74,222,128,0.10);
-  --success-border:rgba(74,222,128,0.25);
+  --success:       #34D399;
+  --success-dim:   rgba(52,211,153,0.10);
+  --success-border:rgba(52,211,153,0.25);
 
   --warn:       #FB923C;
   --warn-dim:   rgba(251,146,60,0.10);
