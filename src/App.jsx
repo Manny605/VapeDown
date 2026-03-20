@@ -666,7 +666,7 @@ export default function VapeControl() {
         {tab === "home"     && <HomeView     {...{isVaping,secsLeft,secsToNext,curSess,nextSess,sched,statDone,statSkipped,vapedMins,todayLimit,cfg,profile,plan,dayDone,skipSession,notifOn,askNotif,effEnd,T}} />}
         {tab === "today"    && <TodayView    {...{sched,nowMin,effEnd,T}} />}
         {tab === "plan"     && <PlanView     {...{plan,cfg,profile,T}} />}
-        {tab === "settings" && <SettingsView {...{editCfg,setEditCfg,cfg,apply:applySettings,resetAll,themeName,setThemeName,T}} />}
+        {tab === "settings" && <SettingsView {...{editCfg,setEditCfg,cfg,profile,apply:applySettings,resetAll,themeName,setThemeName,T}} />}
       </div>
 
       {/* Bottom Nav */}
@@ -991,42 +991,125 @@ function PlanView({ plan, cfg, profile, T }) {
 }
 
 // ─── SETTINGS VIEW ────────────────────────────────────────────────────────────
-function SettingsView({ editCfg, setEditCfg, cfg, apply, resetAll, themeName, setThemeName, T }) {
-  const hasChanges = editCfg.sessions !== cfg.sessions || editCfg.wake !== cfg.wake ||
-                     editCfg.sleep !== cfg.sleep || editCfg.week !== cfg.week;
-  const Slider = ({ label, k, min, max, step = 1, fmt }) => (
-    <div style={{ marginBottom: 20 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-        <label style={{ fontSize: 14, fontWeight: 600, color: T.text }}>{label}</label>
-        <span style={{ fontSize: 14, fontWeight: 700, color: T.accent }}>{fmt ? fmt(editCfg[k]) : editCfg[k]}</span>
-      </div>
-      <input type="range" min={min} max={max} step={step} value={editCfg[k]}
-        onChange={e => setEditCfg(p => ({ ...p, [k]: +e.target.value }))}
-        style={{ width: "100%", accentColor: T.accent, height: 6 }} />
-      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: T.muted, marginTop: 4 }}>
-        <span>{fmt ? fmt(min) : min}</span><span>{fmt ? fmt(max) : max}</span>
-      </div>
-    </div>
-  );
+function SettingsView({ editCfg, setEditCfg, cfg, profile, apply, resetAll, themeName, setThemeName, T }) {
 
-  const Sec = ({ title, children }) => (
+  const hasChanges = editCfg.sessions !== cfg.sessions || editCfg.wake !== cfg.wake ||
+                     editCfg.sleep !== cfg.sleep     || editCfg.week !== cfg.week;
+
+  const cancel = () => setEditCfg({ ...cfg });
+
+  const set = (k, v) => setEditCfg(p => ({ ...p, [k]: v }));
+
+  // Derived preview values based on editCfg
+  const plan         = genPlan(profile.startMins, RHYTHMS[profile.rhythm].pct);
+  const previewLimit = plan[editCfg.week - 1]?.mins ?? 0;
+  const previewDur   = previewLimit > 0 ? Math.max(1, Math.round(previewLimit / editCfg.sessions)) : 0;
+  const daySpan      = editCfg.sleep - editCfg.wake; // hours
+  const wakeOk       = editCfg.wake < editCfg.sleep - 2; // at least 2h gap
+  const totalWeeks   = plan.length;
+
+  // ── Sub-components ──────────────────────────────────────────────────────────
+
+  const Sec = ({ title, subtitle, children }) => (
     <div style={{
       background: T.card, borderRadius: 20, padding: "18px 18px",
       border: `1px solid ${T.border}`, marginBottom: 14,
-      boxShadow: T.dark ? "0 4px 16px rgba(0,0,0,0.2)" : "0 2px 8px rgba(0,0,0,0.06)",
+      boxShadow: T.dark ? "0 4px 20px rgba(0,0,0,0.25)" : "0 2px 10px rgba(0,0,0,0.06)",
     }}>
-      <div style={{ fontSize: 13, fontWeight: 700, color: T.text, marginBottom: 16 }}>{title}</div>
+      <div style={{ marginBottom: 14 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: T.text }}>{title}</div>
+        {subtitle && <div style={{ fontSize: 11, color: T.muted, marginTop: 2 }}>{subtitle}</div>}
+      </div>
       {children}
     </div>
   );
 
-  return (
-    <div style={{ padding: "16px 16px" }}>
-      <div style={{ fontSize: 18, fontWeight: 700, color: T.text, marginBottom: 18 }}>Réglages</div>
+  // Stepper row: label on left, −/value/+ on right
+  const Stepper = ({ label, k, min, max, step = 1, fmt, note }) => {
+    const val     = editCfg[k];
+    const changed = val !== cfg[k];
+    const dec = () => val > min && set(k, val - step);
+    const inc = () => val < max && set(k, val + step);
+    return (
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingBlock: 10, borderBottom: `1px solid ${T.border}` }}>
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: T.text }}>{label}</div>
+          {note && <div style={{ fontSize: 11, color: T.muted, marginTop: 1 }}>{note}</div>}
+          {changed && (
+            <div style={{ fontSize: 10, color: T.accent, fontWeight: 700, marginTop: 2 }}>
+              Modifié · était {fmt ? fmt(cfg[k]) : cfg[k]}
+            </div>
+          )}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <button onClick={dec} disabled={val <= min} style={{
+            width: 38, height: 38, borderRadius: 12, border: `2px solid ${T.border}`,
+            background: T.bg, color: val <= min ? T.muted : T.text,
+            fontSize: 22, fontWeight: 700, cursor: val <= min ? "default" : "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1,
+            opacity: val <= min ? 0.35 : 1,
+          }}>−</button>
+          <div style={{
+            minWidth: 70, textAlign: "center",
+            fontSize: 16, fontWeight: 800,
+            color: changed ? T.accent : T.text,
+          }}>{fmt ? fmt(val) : val}</div>
+          <button onClick={inc} disabled={val >= max} style={{
+            width: 38, height: 38, borderRadius: 12, border: `2px solid ${T.border}`,
+            background: T.bg, color: val >= max ? T.muted : T.text,
+            fontSize: 22, fontWeight: 700, cursor: val >= max ? "default" : "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1,
+            opacity: val >= max ? 0.35 : 1,
+          }}>+</button>
+        </div>
+      </div>
+    );
+  };
 
-      {/* Themes */}
-      <Sec title="🎨 Thème de l'application">
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10 }}>
+  return (
+    <div style={{ padding: "16px 16px 8px" }}>
+
+      {/* ── Header ── */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
+        <div style={{ fontSize: 20, fontWeight: 800, color: T.text }}>Réglages</div>
+        {hasChanges && (
+          <button onClick={cancel} style={{
+            background: T.danger + "18", color: T.danger, border: `1.5px solid ${T.danger}44`,
+            borderRadius: 10, padding: "6px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer",
+          }}>Annuler</button>
+        )}
+      </div>
+
+      {/* ── Profil ── */}
+      <Sec title="👤 Profil">
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <div style={{
+            width: 52, height: 52, borderRadius: 16, flexShrink: 0,
+            background: `linear-gradient(135deg, ${T.accent}, ${T.accent}88)`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 24, fontWeight: 800, color: "#fff",
+            boxShadow: `0 4px 14px ${T.accent}44`,
+          }}>
+            {profile.name.charAt(0).toUpperCase()}
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 16, fontWeight: 800, color: T.text }}>{profile.name}</div>
+            <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>{profile.level}</div>
+            <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
+              <span style={{ background: RHYTHMS[profile.rhythm].colorHex + "22", color: RHYTHMS[profile.rhythm].colorHex, borderRadius: 999, padding: "3px 10px", fontSize: 11, fontWeight: 700 }}>
+                {RHYTHMS[profile.rhythm].emoji} {RHYTHMS[profile.rhythm].label}
+              </span>
+              <span style={{ background: T.accent + "18", color: T.accent, borderRadius: 999, padding: "3px 10px", fontSize: 11, fontWeight: 700 }}>
+                Départ {profile.startMins} min
+              </span>
+            </div>
+          </div>
+        </div>
+      </Sec>
+
+      {/* ── Thème ── */}
+      <Sec title="🎨 Apparence" subtitle="Changement appliqué immédiatement">
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
           {Object.entries(THEMES).map(([k, th]) => (
             <button key={k} onClick={() => setThemeName(k)} style={{
               border: `2px solid ${themeName === k ? T.accent : T.border}`,
@@ -1035,47 +1118,115 @@ function SettingsView({ editCfg, setEditCfg, cfg, apply, resetAll, themeName, se
               display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
               transition: "all 0.15s",
               boxShadow: themeName === k ? `0 4px 12px ${T.accent}44` : "none",
-              transform: themeName === k ? "scale(1.05)" : "scale(1)",
+              transform: themeName === k ? "scale(1.04)" : "scale(1)",
             }}>
-              <div style={{ width: 28, height: 28, borderRadius: "50%", background: th.accent, border: `2px solid ${th.border}66` }} />
-              <div style={{ fontSize: 9, fontWeight: 700, color: th.text, textAlign: "center", width: "100%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", paddingInline: 2 }}>{th.name}</div>
+              <div style={{ width: 28, height: 28, borderRadius: "50%", background: `linear-gradient(135deg,${th.accent},${th.accent}88)`, border: `2px solid ${th.border}` }} />
+              <div style={{ fontSize: 9, fontWeight: 700, color: th.text, textAlign: "center", width: "100%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", paddingInline: 2 }}>
+                {th.name}
+              </div>
+              {themeName === k && (
+                <div style={{ width: 6, height: 6, borderRadius: "50%", background: T.accent }} />
+              )}
             </button>
           ))}
         </div>
       </Sec>
 
-      <Sec title="⏱️ Sessions par jour">
-        <Slider label="Sessions" k="sessions" min={2} max={12} fmt={v => `${v}x`} />
+      {/* ── Sessions ── */}
+      <Sec title="⏱️ Sessions par jour" subtitle={previewDur > 0 ? `≈ ${previewDur} min par session avec le planning actuel` : "Aucune session cette semaine"}>
+        <Stepper k="sessions" label="Nombre de sessions" min={2} max={12} fmt={v => `${v} sessions`} />
       </Sec>
 
-      <Sec title="🌅 Horaires">
-        <Slider label="Réveil"  k="wake"  min={4}  max={12} fmt={v => `${pad2(v)}:00`} />
-        <Slider label="Coucher" k="sleep" min={18} max={26} fmt={v => `${pad2(v % 24)}:00`} />
+      {/* ── Horaires ── */}
+      <Sec title="🌅 Horaires de la journée" subtitle={`Amplitude : ${daySpan}h · ${wakeOk ? `De ${pad2(editCfg.wake)}:00 à ${pad2(editCfg.sleep % 24)}:00` : "⚠️ Horaires invalides"}`}>
+        <Stepper k="wake"  label="Réveil"   min={4}  max={editCfg.sleep - 3} fmt={v => `${pad2(v)}:00`}        note="Heure du premier réveil" />
+        <Stepper k="sleep" label="Coucher"  min={editCfg.wake + 3} max={26}  fmt={v => `${pad2(v % 24)}:00`} note="Heure du coucher" />
       </Sec>
 
-      <Sec title="📅 Semaine actuelle">
-        <Slider label="Semaine" k="week" min={1} max={50} fmt={v => `Semaine ${v}`} />
+      {/* ── Semaine ── */}
+      <Sec title="📅 Semaine du programme" subtitle={`Programme total : ${totalWeeks} semaine${totalWeeks > 1 ? "s" : ""} · Limite semaine ${editCfg.week} : ${previewLimit} min/jour`}>
+        <Stepper k="week" label="Semaine actuelle" min={1} max={totalWeeks} fmt={v => `Semaine ${v} / ${totalWeeks}`} note={previewLimit === 0 ? "🎉 Programme terminé !" : `Objectif : ${previewLimit} min/jour`} />
+        {/* Mini week progress bar */}
+        <div style={{ marginTop: 14 }}>
+          <div style={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
+            {plan.map(({ w }) => (
+              <div key={w} style={{
+                flex: "1 0 auto", maxWidth: 20, height: 6, borderRadius: 3,
+                background: w < editCfg.week ? T.ok : w === editCfg.week ? T.accent : T.border,
+                transition: "background 0.2s",
+              }} />
+            ))}
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: T.muted, marginTop: 4 }}>
+            <span>Sem. 1</span>
+            <span style={{ color: T.ok, fontWeight: 700 }}>{editCfg.week - 1} terminée{editCfg.week > 2 ? "s" : ""}</span>
+            <span>Sem. {totalWeeks}</span>
+          </div>
+        </div>
       </Sec>
 
-      <button onClick={apply} disabled={!hasChanges} style={{
-        background: hasChanges ? T.accent : T.border,
-        color: hasChanges ? T.accentText : T.muted,
+      {/* ── Prévisualisation de l'impact ── */}
+      {hasChanges && (
+        <div style={{
+          background: T.accent + "14", border: `1.5px solid ${T.accent}44`,
+          borderRadius: 16, padding: "14px 16px", marginBottom: 14,
+        }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: T.accent, marginBottom: 8, textTransform: "uppercase", letterSpacing: 0.5 }}>
+            Aperçu des modifications
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+            {[
+              { l: "Sessions/jour", v: `${editCfg.sessions}x`, changed: editCfg.sessions !== cfg.sessions },
+              { l: "Durée/session", v: previewDur > 0 ? `~${previewDur} min` : "—", changed: editCfg.sessions !== cfg.sessions || editCfg.week !== cfg.week },
+              { l: "Réveil",        v: `${pad2(editCfg.wake)}:00`, changed: editCfg.wake !== cfg.wake },
+              { l: "Coucher",       v: `${pad2(editCfg.sleep % 24)}:00`, changed: editCfg.sleep !== cfg.sleep },
+              { l: "Semaine",       v: `${editCfg.week} / ${totalWeeks}`, changed: editCfg.week !== cfg.week },
+              { l: "Limite/jour",   v: `${previewLimit} min`, changed: editCfg.week !== cfg.week },
+            ].map(({ l, v, changed }) => (
+              <div key={l} style={{ background: changed ? T.accent + "18" : T.bg, borderRadius: 10, padding: "8px 10px", border: `1px solid ${changed ? T.accent + "44" : T.border}` }}>
+                <div style={{ fontSize: 10, color: T.muted }}>{l}</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: changed ? T.accent : T.text, marginTop: 2 }}>{v}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Actions ── */}
+      <button onClick={apply} disabled={!hasChanges || !wakeOk} style={{
+        background: (hasChanges && wakeOk) ? T.accent : T.border,
+        color: (hasChanges && wakeOk) ? T.accentText : T.muted,
         border: "none", borderRadius: 16, padding: "16px 24px", fontSize: 16, fontWeight: 700,
-        width: "100%", cursor: hasChanges ? "pointer" : "not-allowed", marginBottom: 12,
-        boxShadow: hasChanges ? `0 4px 20px ${T.accent}55` : "none",
+        width: "100%", cursor: (hasChanges && wakeOk) ? "pointer" : "not-allowed",
+        marginBottom: 10,
+        boxShadow: (hasChanges && wakeOk) ? `0 4px 20px ${T.accent}55` : "none",
         transition: "all 0.2s",
       }}>
-        ✅ Enregistrer les réglages
+        {hasChanges ? "✅ Enregistrer les réglages" : "✅ Aucune modification"}
       </button>
+
+      {hasChanges && (
+        <button onClick={cancel} style={{
+          background: "transparent", color: T.muted,
+          border: `2px solid ${T.border}`, borderRadius: 16,
+          padding: "13px 24px", fontSize: 14, fontWeight: 600,
+          width: "100%", cursor: "pointer", marginBottom: 10,
+          transition: "all 0.15s",
+        }}>
+          ↩ Annuler les modifications
+        </button>
+      )}
 
       <button onClick={resetAll} style={{
         background: "transparent", color: T.danger,
-        border: `2px solid ${T.danger}44`, borderRadius: 16,
+        border: `2px solid ${T.danger}33`, borderRadius: 16,
         padding: "13px 24px", fontSize: 14, fontWeight: 600,
         width: "100%", cursor: "pointer",
       }}>
-        🔄 Refaire l'évaluation
+        🔄 Recommencer l'évaluation
       </button>
+
+      <div style={{ height: 8 }} />
     </div>
   );
 }
