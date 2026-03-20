@@ -1,0 +1,187 @@
+.wrap {
+  min-height: 100dvh;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  padding: 0 20px 32px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 0 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+
+.logo {
+  width: 32px; height: 32px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 8px; flex-shrink: 0;
+}
+
+.appName {
+  font-size: 16px; font-weight: 700;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.credit {
+  font-size: 10px; font-weight: 500;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+}
+
+.progress {
+  display: flex; gap: 6px;
+  margin-bottom: 28px;
+}
+
+.progDot {
+  height: 3px; flex: 1;
+  background: var(--border);
+  border-radius: 2px;
+  transition: background 0.3s;
+}
+.progActive { background: var(--accent); }
+
+.screen { display: flex; flex-direction: column; flex: 1; }
+
+.tag {
+  font-size: 11px; font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+
+.h1 {
+  font-size: 26px; font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.25; margin-bottom: 16px;
+}
+
+.h2 {
+  font-size: 22px; font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.body {
+  font-size: 14px; font-weight: 400;
+  color: var(--text-secondary);
+  line-height: 1.65; margin-bottom: 22px;
+}
+
+.pillRow { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+
+.pill {
+  font-size: 11px; font-weight: 500;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-border);
+  border-radius: 20px;
+  padding: 4px 12px;
+}
+
+.infoBox {
+  background: var(--navy);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 14px 16px;
+  margin-bottom: 24px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+
+.infoRow {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; color: var(--text-secondary);
+}
+
+.infoIcon { color: var(--accent); font-size: 10px; flex-shrink: 0; }
+
+.rateList { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+
+.rateBtn {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--navy);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+}
+.rateBtn:hover { border-color: var(--border-light); }
+.rateSel { background: var(--accent-dim); border-color: var(--accent-border); }
+
+.rateLeft { display: flex; flex-direction: column; gap: 3px; }
+.rateLabel { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.rateDesc  { font-size: 12px; font-weight: 400; color: var(--text-secondary); }
+.rateWeeks { font-size: 11px; font-weight: 600; color: var(--accent); flex-shrink: 0; }
+
+.estimateBox {
+  font-size: 13px; color: var(--text-muted);
+  background: var(--navy);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 10px 14px;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.fieldGroup { margin-bottom: 16px; }
+
+.fieldLabel {
+  display: block;
+  font-size: 11px; font-weight: 600;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+
+.summaryList {
+  background: var(--navy);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+
+.summaryRow {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+}
+
+.summaryKey {
+  font-size: 11px; font-weight: 600;
+  color: var(--text-dim);
+  letter-spacing: 0.08em; text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.summaryVal {
+  font-size: 13px; font-weight: 500;
+  color: var(--text-primary);
+  text-align: right;
+}
+
+.creditBox {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--navy);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 10px 14px;
+  margin-bottom: 20px;
+}
+
+.creditApp { font-size: 13px; font-weight: 700; color: var(--accent); }
+.creditDev { font-size: 11px; font-weight: 400; color: var(--text-dim); }
+
+.btnGroup { display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
+
+.cta { height: 50px; font-size: 14px; }

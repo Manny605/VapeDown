@@ -1,0 +1,87 @@
+.wrap { display: flex; flex-direction: column; gap: 12px; }
+
+.loading { display: flex; align-items: center; justify-content: center; min-height: 60vh; }
+.spinner {
+  width: 32px; height: 32px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.observeBanner {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--accent-dim); border: 1px solid var(--accent-border);
+  border-radius: var(--r-md); padding: 10px 14px;
+  font-size: 12px; font-weight: 500; color: var(--accent);
+}
+.observeIcon { font-size: 14px; flex-shrink: 0; animation: pulse 2s ease-in-out infinite; }
+
+/* Vaper button */
+.vaperSection { }
+
+.vaperBtn {
+  width: 100%; height: 72px;
+  background: var(--accent); border: none;
+  border-radius: var(--r-xl);
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  font-size: 16px; font-weight: 700; color: #fff; letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.vaperBtn:active { transform: scale(0.98); }
+.vaperBtnFeedback { background: #4ADE80; }
+.vaperBtnIcon { font-size: 22px; font-weight: 300; }
+
+.triggerPanel { }
+.triggerPrompt { font-size: 12px; font-weight: 500; color: var(--text-muted); margin-bottom: 10px; }
+.triggerGrid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-bottom: 12px;
+}
+.triggerBtn {
+  padding: 9px 6px; background: var(--bg);
+  border: 1px solid var(--border); border-radius: var(--r-md);
+  font-size: 12px; font-weight: 500; color: var(--text-secondary);
+  cursor: pointer; text-align: center; transition: all 0.15s;
+  font-family: var(--font);
+}
+.triggerBtn:hover { border-color: var(--border-light); }
+.triggerSel { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+.triggerActions { display: flex; flex-direction: column; gap: 8px; }
+
+/* Quota */
+.quotaCard { }
+.quotaHeader { display: flex; justify-content: space-between; align-items: flex-start; }
+.quotaCount { display: flex; align-items: baseline; gap: 4px; margin-top: 4px; }
+.quotaOf { font-size: 16px; font-weight: 500; color: var(--text-muted); }
+.quotaRight { display: flex; flex-direction: column; align-items: flex-end; padding-top: 4px; }
+.quotaLeftNum { font-size: 22px; font-weight: 700; }
+.quotaLeftLbl { font-size: 10px; font-weight: 500; color: var(--text-dim); }
+.quotaOver { font-size: 12px; font-weight: 600; color: var(--warn); }
+
+/* Observation counter */
+.obsCard { text-align: center; }
+.obsCount { font-size: 48px; font-weight: 700; color: var(--accent); margin: 6px 0; }
+
+/* Metrics */
+.metricsRow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.metric { padding: 12px 10px; }
+.metricVal { font-size: 18px; font-weight: 700; margin-top: 5px; line-height: 1; }
+
+/* Savings */
+.savingsCard { }
+.savingsRow { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.savingsVal { font-size: 22px; font-weight: 700; color: var(--accent); margin-top: 4px; }
+.savingsGoal { font-size: 12px; font-weight: 500; color: var(--text-muted); text-align: right; max-width: 140px; line-height: 1.4; }
+
+/* Stop estimate */
+.stopCard { }
+.stopDate { font-size: 18px; font-weight: 700; color: var(--text-primary); margin: 4px 0; }
+.stopPhase { font-size: 11px; font-weight: 500; color: var(--accent); }
+
+/* Footer */
+.footerCredit {
+  text-align: center; font-size: 10px; font-weight: 400;
+  color: var(--text-dim); padding: 8px 0 4px;
+  letter-spacing: 0.04em;
+}
