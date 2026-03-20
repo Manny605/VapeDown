@@ -469,18 +469,33 @@ function Onboarding({ onComplete, T }) {
   return null;
 }
 
+// ─── STORAGE HELPERS ─────────────────────────────────────────────────────────
+const LS = {
+  get: (key, fallback) => { try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : fallback; } catch { return fallback; } },
+  set: (key, val)      => { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} },
+  del: (key)           => { try { localStorage.removeItem(key); } catch {} },
+};
+const todayKey = () => new Date().toISOString().slice(0, 10);
+
 // ─── ROOT ─────────────────────────────────────────────────────────────────────
 export default function VapeControl() {
-  const [profile,   setProfile]   = useState(null);
-  const [cfg,       setCfg]       = useState({ sessions:6, wake:7, sleep:23, week:1 });
+  const [profile,   setProfile]   = useState(() => LS.get("vd_profile", null));
+  const [cfg,       setCfg]       = useState(() => LS.get("vd_cfg", { sessions:6, wake:7, sleep:23, week:1 }));
   const [sched,     setSched]     = useState([]);
   const [nowSec,    setNowSec]    = useState(getNow());
   const [tab,       setTab]       = useState("home");
   const [notifOn,   setNotifOn]   = useState(false);
-  const [themeName, setThemeName] = useState("midnight");
-  const [editCfg,   setEditCfg]   = useState(cfg);
-  const notifSent = useRef(new Set());
+  const [themeName, setThemeName] = useState(() => LS.get("vd_theme", "midnight"));
+  const [editCfg,   setEditCfg]   = useState(() => LS.get("vd_cfg", { sessions:6, wake:7, sleep:23, week:1 }));
+  const notifSent  = useRef(new Set());
+  const firstMount = useRef(true);
   const T = THEMES[themeName];
+
+  // Persist state to localStorage
+  useEffect(() => { LS.set("vd_profile",  profile);   }, [profile]);
+  useEffect(() => { LS.set("vd_cfg",      cfg);        }, [cfg]);
+  useEffect(() => { LS.set("vd_theme",    themeName);  }, [themeName]);
+  useEffect(() => { if (sched.length > 0) LS.set("vd_sched", { date: todayKey(), sched }); }, [sched]);
 
   useEffect(() => { const id = setInterval(() => setNowSec(getNow()), 1000); return () => clearInterval(id); }, []);
   useEffect(() => { if ("Notification" in window && Notification.permission === "granted") setNotifOn(true); }, []);
@@ -496,6 +511,18 @@ export default function VapeControl() {
 
   useEffect(() => {
     if (!profile) return;
+
+    // On first mount, restore today's schedule if it exists
+    if (firstMount.current) {
+      firstMount.current = false;
+      const stored = LS.get("vd_sched", null);
+      if (stored && stored.date === todayKey() && Array.isArray(stored.sched) && stored.sched.length > 0) {
+        setSched(stored.sched);
+        return;
+      }
+    }
+
+    // Otherwise regenerate (new day, new profile, or cfg changed)
     const plan = genPlan(profile.startMins, RHYTHMS[profile.rhythm].pct);
     const limit = plan[cfg.week - 1]?.mins ?? 0;
     setSched(buildSchedule({ limit, sessions: cfg.sessions, wake: cfg.wake, sleep: cfg.sleep }));
@@ -564,7 +591,19 @@ export default function VapeControl() {
     push("⏭️ Session reportée", futIds.length > 0 ? `+${bonus} min redistribuées.` : "Aucune session restante.");
   };
 
-  const applySettings = () => { setCfg(editCfg); setTab("home"); };
+  const applySettings = () => {
+    firstMount.current = false; // Force schedule regeneration on next cfg change
+    LS.del("vd_sched");
+    setCfg(editCfg);
+    setTab("home");
+  };
+
+  const resetAll = () => {
+    if (!window.confirm("Recommencer l'évaluation depuis le début ?")) return;
+    LS.del("vd_profile"); LS.del("vd_cfg"); LS.del("vd_sched");
+    const defaultCfg = { sessions:6, wake:7, sleep:23, week:1 };
+    setCfg(defaultCfg); setEditCfg(defaultCfg); setProfile(null);
+  };
 
   const plan       = profile ? genPlan(profile.startMins, RHYTHMS[profile.rhythm].pct) : [];
   const todayLimit = plan[cfg.week - 1]?.mins ?? 0;
@@ -625,7 +664,7 @@ export default function VapeControl() {
         {tab === "home"     && <HomeView     {...{isVaping,secsLeft,secsToNext,curSess,nextSess,sched,statDone,statSkipped,vapedMins,todayLimit,cfg,profile,plan,dayDone,skipSession,notifOn,askNotif,effEnd,T}} />}
         {tab === "today"    && <TodayView    {...{sched,nowMin,effEnd,T}} />}
         {tab === "plan"     && <PlanView     {...{plan,cfg,profile,T}} />}
-        {tab === "settings" && <SettingsView {...{editCfg,setEditCfg,apply:applySettings,profile,setProfile,themeName,setThemeName,T}} />}
+        {tab === "settings" && <SettingsView {...{editCfg,setEditCfg,apply:applySettings,resetAll,themeName,setThemeName,T}} />}
       </div>
 
       {/* Bottom Nav */}
@@ -950,7 +989,7 @@ function PlanView({ plan, cfg, profile, T }) {
 }
 
 // ─── SETTINGS VIEW ────────────────────────────────────────────────────────────
-function SettingsView({ editCfg, setEditCfg, apply, profile, setProfile, themeName, setThemeName, T }) {
+function SettingsView({ editCfg, setEditCfg, apply, resetAll, themeName, setThemeName, T }) {
   const Slider = ({ label, k, min, max, step = 1, fmt }) => (
     <div style={{ marginBottom: 20 }}>
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
@@ -1023,7 +1062,7 @@ function SettingsView({ editCfg, setEditCfg, apply, profile, setProfile, themeNa
         ✅ Enregistrer les réglages
       </button>
 
-      <button onClick={() => { if (window.confirm("Recommencer l'évaluation depuis le début ?")) setProfile(null); }} style={{
+      <button onClick={resetAll} style={{
         background: "transparent", color: T.danger,
         border: `2px solid ${T.danger}44`, borderRadius: 16,
         padding: "13px 24px", fontSize: 14, fontWeight: 600,
