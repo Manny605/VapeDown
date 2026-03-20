@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { getProfile, saveProfile, setKey } from '../store/idb.js';
+import { getProfile, setKey } from '../store/idb.js';
+import { THEMES, applyTheme, getStoredTheme } from '../store/theme.js';
 import styles from './Settings.module.css';
 
 const RATES = [
@@ -9,8 +10,7 @@ const RATES = [
 ];
 
 function rateIdFromValue(val) {
-  const match = RATES.find((r) => Math.abs(r.rate - val) < 0.01);
-  return match?.id || 'moderate';
+  return RATES.find((r) => Math.abs(r.rate - val) < 0.01)?.id || 'moderate';
 }
 
 export default function Settings() {
@@ -19,8 +19,8 @@ export default function Settings() {
   const [rateId, setRateId]             = useState(null);
   const [rateSaved, setRateSaved]       = useState(false);
   const [profile, setProfile]           = useState(null);
+  const [activeTheme, setActiveTheme]   = useState(getStoredTheme());
 
-  // Load profile once
   useState(() => {
     getProfile().then((p) => {
       setProfile(p);
@@ -33,6 +33,11 @@ export default function Settings() {
     await setKey('reductionRate', rate);
     setRateSaved(true);
     setTimeout(() => setRateSaved(false), 2000);
+  }
+
+  function handleTheme(id) {
+    applyTheme(id);
+    setActiveTheme(id);
   }
 
   async function requestNotif() {
@@ -49,8 +54,32 @@ export default function Settings() {
   return (
     <div className={styles.wrap}>
 
-      {/* Rythme de réduction */}
+      {/* Thème */}
       <div className={`${styles.section} fade-up`}>
+        <div className="label" style={{ marginBottom: 12 }}>Apparence</div>
+        <div className={styles.themeGrid}>
+          {THEMES.map((t) => (
+            <button
+              key={t.id}
+              className={`${styles.themeBtn} ${activeTheme === t.id ? styles.themeSel : ''}`}
+              onClick={() => handleTheme(t.id)}
+            >
+              <div className={styles.themePreview} style={{ background: t.bg }}>
+                <div className={styles.themePreviewCard} style={{ background: t.card, borderColor: t.accent + '40' }}>
+                  <div className={styles.themePreviewAccent} style={{ background: t.accent }} />
+                  <div className={styles.themePreviewLine} style={{ background: t.accent + '50' }} />
+                  <div className={styles.themePreviewLine} style={{ background: t.accent + '30', width: '60%' }} />
+                </div>
+              </div>
+              <span className={styles.themeLabel}>{t.label}</span>
+              {activeTheme === t.id && <span className={styles.themeCheck}>✓</span>}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Rythme de réduction */}
+      <div className={`${styles.section} fade-up-1`}>
         <div className="label" style={{ marginBottom: 12 }}>Rythme de réduction</div>
         <div className={styles.rateList}>
           {RATES.map((r) => (
@@ -65,7 +94,7 @@ export default function Settings() {
           ))}
         </div>
         <button
-          className={`btn btn-primary ${styles.saveBtn}`}
+          className="btn btn-primary"
           onClick={handleRateSave}
           disabled={!rateId}
         >
@@ -74,7 +103,7 @@ export default function Settings() {
       </div>
 
       {/* Notifications */}
-      <div className={`${styles.section} fade-up-1`}>
+      <div className={`${styles.section} fade-up-2`}>
         <div className="label" style={{ marginBottom: 12 }}>Notifications</div>
         <div className={`card ${styles.row}`}>
           <div>
@@ -94,7 +123,7 @@ export default function Settings() {
       </div>
 
       {/* À propos */}
-      <div className={`${styles.section} fade-up-2`}>
+      <div className={`${styles.section} fade-up-3`}>
         <div className="label" style={{ marginBottom: 12 }}>À propos</div>
         <div className={`card ${styles.aboutCard}`}>
           <div className={styles.aboutRow}>

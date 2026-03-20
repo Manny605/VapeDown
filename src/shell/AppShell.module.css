@@ -104,4 +104,4 @@
   letter-spacing: 0.02em;
 }
 
-.navActive .navLabel { color: var(--accent); }
+.navActive .navLabel { color: inherit; }

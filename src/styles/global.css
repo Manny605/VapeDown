@@ -40,6 +40,85 @@
   --footer-h: 66px;
 }
 
+/* ── Themes ── */
+[data-theme="violet"] {
+  --bg:           #050508;
+  --navy:         #0D1B2E;
+  --navy-light:   #122338;
+  --border:       #1a2f4a;
+  --border-light: #243d5c;
+  --text-primary:   #E8EEFF;
+  --text-secondary: #7A9ABB;
+  --text-muted:     #3A5A8A;
+  --text-dim:       #2A4A7A;
+  --accent:       #7C6AF7;
+  --accent-dim:   rgba(124,106,247,0.12);
+  --accent-border:rgba(124,106,247,0.28);
+}
+
+[data-theme="sunset"] {
+  --bg:           #080504;
+  --navy:         #1a0d07;
+  --navy-light:   #251408;
+  --border:       #3a1e0e;
+  --border-light: #4e2a12;
+  --text-primary:   #fef3e8;
+  --text-secondary: #ab7a4a;
+  --text-muted:     #6a3a1a;
+  --text-dim:       #4a2510;
+  --accent:       #FB923C;
+  --accent-dim:   rgba(251,146,60,0.12);
+  --accent-border:rgba(251,146,60,0.28);
+}
+
+[data-theme="arctic"] {
+  --bg:           #040809;
+  --navy:         #081520;
+  --navy-light:   #0d2030;
+  --border:       #153040;
+  --border-light: #1e4055;
+  --text-primary:   #e8f8ff;
+  --text-secondary: #6aaabb;
+  --text-muted:     #2a6a7a;
+  --text-dim:       #1a4a5a;
+  --accent:       #22D3EE;
+  --accent-dim:   rgba(34,211,238,0.12);
+  --accent-border:rgba(34,211,238,0.28);
+}
+
+[data-theme="crimson"] {
+  --bg:           #080405;
+  --navy:         #180a0a;
+  --navy-light:   #220e0e;
+  --border:       #3a1515;
+  --border-light: #4e1e1e;
+  --text-primary:   #fff0f0;
+  --text-secondary: #ab6a6a;
+  --text-muted:     #6a2a2a;
+  --text-dim:       #4a1a1a;
+  --accent:       #F87171;
+  --accent-dim:   rgba(248,113,113,0.12);
+  --accent-border:rgba(248,113,113,0.28);
+}
+
+[data-theme="light"] {
+  --bg:           #f0f4f0;
+  --navy:         #ffffff;
+  --navy-light:   #f0f7f3;
+  --border:       #d0e8d8;
+  --border-light: #b8dcca;
+  --text-primary:   #0d1f14;
+  --text-secondary: #3d6a50;
+  --text-muted:     #7aab8a;
+  --text-dim:       #9ac4aa;
+  --accent:       #059669;
+  --accent-dim:   rgba(5,150,105,0.10);
+  --accent-border:rgba(5,150,105,0.28);
+  --success:       #059669;
+  --success-dim:   rgba(5,150,105,0.10);
+  --success-border:rgba(5,150,105,0.25);
+}
+
 /* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { background: var(--bg); color: var(--text-primary); font-family: var(--font); -webkit-font-smoothing: antialiased; overscroll-behavior: none; }
