@@ -68,11 +68,23 @@
 .metric { padding: 12px 10px; }
 .metricVal { font-size: 18px; font-weight: 700; margin-top: 5px; line-height: 1; }
 
-/* Savings */
-.savingsCard { }
-.savingsRow { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.savingsVal { font-size: 22px; font-weight: 700; color: var(--accent); margin-top: 4px; }
-.savingsGoal { font-size: 12px; font-weight: 500; color: var(--text-muted); text-align: right; max-width: 140px; line-height: 1.4; }
+/* Count input */
+.countRow { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 6px; }
+.countBtn {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--component); border: 1px solid var(--border);
+  color: var(--text-primary); font-size: 22px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.countBtn:active { opacity: 0.7; }
+.countInput {
+  width: 72px; height: 48px; text-align: center;
+  font-size: 28px; font-weight: 700; color: var(--text-primary);
+  background: var(--component); border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.countInput::-webkit-inner-spin-button,
+.countInput::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
 /* Stop estimate */
 .stopCard { }

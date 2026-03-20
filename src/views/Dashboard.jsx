@@ -1,21 +1,20 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getDashboardData, addLog, formatElapsed, getSavings } from '../store/idb.js';
+import { getDashboardData, addLog, formatElapsed } from '../store/idb.js';
 import styles from './Dashboard.module.css';
 
 const TRIGGERS = ['Café', 'Stress', 'Ennui', 'Social', 'Repas', 'Autre'];
 
 export default function Dashboard() {
   const [data, setData]       = useState(null);
-  const [savings, setSavings] = useState('0.00');
   const [logging, setLogging] = useState(false);
   const [trigger, setTrigger] = useState(null);
+  const [count, setCount]     = useState(1);
   const [feedback, setFeedback] = useState(null);
   const [elapsed, setElapsed] = useState(null);
 
   const load = useCallback(async () => {
-    const [d, s] = await Promise.all([getDashboardData(), getSavings()]);
+    const d = await getDashboardData();
     setData(d);
-    setSavings(s);
   }, []);
 
   useEffect(() => { load(); }, [load]);
@@ -30,9 +29,11 @@ export default function Dashboard() {
   }, [data?.elapsedSinceLastMs]);
 
   async function handleLog() {
-    await addLog(trigger);
+    const n = Math.max(1, Math.round(count));
+    for (let i = 0; i < n; i++) await addLog(trigger);
     setLogging(false);
     setTrigger(null);
+    setCount(1);
     setFeedback('logged');
     setTimeout(() => setFeedback(null), 2000);
     load();
@@ -69,7 +70,19 @@ export default function Dashboard() {
           </button>
         ) : (
           <div className={`${styles.triggerPanel} card`}>
-            <p className={styles.triggerPrompt}>Contexte (optionnel)</p>
+            <p className={styles.triggerPrompt}>Nombre de bouffées</p>
+            <div className={styles.countRow}>
+              <button className={styles.countBtn} onClick={() => setCount((c) => Math.max(1, c - 1))}>−</button>
+              <input
+                className={styles.countInput}
+                type="number"
+                min="1"
+                value={count}
+                onChange={(e) => setCount(Math.max(1, parseInt(e.target.value) || 1))}
+              />
+              <button className={styles.countBtn} onClick={() => setCount((c) => c + 1)}>+</button>
+            </div>
+            <p className={styles.triggerPrompt} style={{ marginTop: 12 }}>Contexte (optionnel)</p>
             <div className={styles.triggerGrid}>
               {TRIGGERS.map((t) => (
                 <button
@@ -83,7 +96,7 @@ export default function Dashboard() {
               <button className={`btn btn-primary`} style={{ height: 44, fontSize: 13 }} onClick={handleLog}>
                 Confirmer
               </button>
-              <button className={`btn btn-ghost`} style={{ height: 44, fontSize: 13 }} onClick={() => { setLogging(false); setTrigger(null); }}>
+              <button className={`btn btn-ghost`} style={{ height: 44, fontSize: 13 }} onClick={() => { setLogging(false); setTrigger(null); setCount(1); }}>
                 Annuler
               </button>
             </div>
@@ -145,19 +158,6 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-
-      {/* Savings */}
-      {profile.goalProject && (
-        <div className={`card card-accent ${styles.savingsCard} fade-up-4`}>
-          <div className={styles.savingsRow}>
-            <div>
-              <div className="label">Économies</div>
-              <div className={styles.savingsVal}>{savings} €</div>
-            </div>
-            <div className={styles.savingsGoal}>→ {profile.goalProject}</div>
-          </div>
-        </div>
-      )}
 
       {/* Stop estimate */}
       {stopDateEstimate && !isObserving && (

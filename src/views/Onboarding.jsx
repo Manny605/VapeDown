@@ -8,11 +8,11 @@ const RATES = [
   { id: 'fast', label: 'Rapide',        rate: 0.35, desc: '−35% / semaine',  weeks: '~7 semaines'  },
 ];
 
-const STEPS = ['welcome', 'observe', 'rhythm', 'goal', 'ready'];
+const STEPS = ['welcome', 'observe', 'rhythm', 'ready'];
 
 export default function Onboarding() {
   const [step, setStep] = useState(0);
-  const [form, setForm] = useState({ rate: 'moderate', goalProject: '', unitCost: '' });
+  const [form, setForm] = useState({ rate: 'moderate' });
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
   const current = STEPS[step];
 
@@ -20,7 +20,7 @@ export default function Onboarding() {
 
   async function finish() {
     const rateVal = RATES.find((r) => r.id === form.rate)?.rate || 0.25;
-    await initPlan(20, rateVal, form.goalProject, form.unitCost);
+    await initPlan(20, rateVal);
     window.location.href = '/';
   }
 
@@ -62,7 +62,7 @@ export default function Onboarding() {
       {/* Observe */}
       {current === 'observe' && (
         <div className={styles.screen}>
-          <div className={styles.tag}>Étape 1 / 4</div>
+          <div className={styles.tag}>Étape 1 / 3</div>
           <h2 className={styles.h2}>D'abord, on observe.</h2>
           <p className={styles.body}>
             Pendant 3 jours, logue chaque bouffée sans restriction. L'app mesure ta consommation réelle pour construire un plan honnête — pas basé sur une estimation.
@@ -70,7 +70,7 @@ export default function Onboarding() {
           <div className={styles.infoBox}>
             <div className={styles.infoRow}>
               <span className={styles.infoIcon}>○</span>
-              <span>Un tap = une bouffée loguée</span>
+              <span>Entre le nombre de bouffées directement</span>
             </div>
             <div className={styles.infoRow}>
               <span className={styles.infoIcon}>○</span>
@@ -91,7 +91,7 @@ export default function Onboarding() {
       {/* Rhythm */}
       {current === 'rhythm' && (
         <div className={styles.screen}>
-          <div className={styles.tag}>Étape 2 / 4</div>
+          <div className={styles.tag}>Étape 2 / 3</div>
           <h2 className={styles.h2}>Choisis ton rythme.</h2>
           <p className={styles.body}>Quel rythme de réduction veux-tu maintenir ?</p>
           <div className={styles.rateList}>
@@ -119,44 +119,10 @@ export default function Onboarding() {
         </div>
       )}
 
-      {/* Goal */}
-      {current === 'goal' && (
-        <div className={styles.screen}>
-          <div className={styles.tag}>Étape 3 / 4</div>
-          <h2 className={styles.h2}>Ta motivation.</h2>
-          <p className={styles.body}>Ces informations apparaissent dans ton dashboard — rappel silencieux de pourquoi tu le fais.</p>
-          <div className={styles.fieldGroup}>
-            <label className={styles.fieldLabel}>Projet pour tes économies</label>
-            <input
-              type="text"
-              placeholder="Voyage, remboursement, achat..."
-              value={form.goalProject}
-              onChange={(e) => set('goalProject', e.target.value)}
-            />
-          </div>
-          <div className={styles.fieldGroup}>
-            <label className={styles.fieldLabel}>Coût par pod / cartouche (€)</label>
-            <input
-              type="number"
-              inputMode="decimal"
-              min="0"
-              step="0.1"
-              placeholder="ex : 8.50"
-              value={form.unitCost}
-              onChange={(e) => set('unitCost', e.target.value)}
-            />
-          </div>
-          <div className={styles.btnGroup}>
-            <button className={`btn btn-primary ${styles.cta}`} onClick={() => setStep(4)}>Suivant →</button>
-            <button className={`btn btn-ghost`} onClick={() => setStep(2)}>← Retour</button>
-          </div>
-        </div>
-      )}
-
       {/* Ready */}
       {current === 'ready' && (
         <div className={styles.screen}>
-          <div className={styles.tag}>Étape 4 / 4</div>
+          <div className={styles.tag}>Étape 3 / 3</div>
           <h2 className={styles.h2}>Tout est prêt.</h2>
           <p className={styles.body}>Voici ce qui t'attend :</p>
           <div className={styles.summaryList}>
@@ -168,12 +134,6 @@ export default function Onboarding() {
               <span className={styles.summaryKey}>Arrêt estimé</span>
               <span className={styles.summaryVal} style={{ color: 'var(--accent)' }}>{estimatedWeeks}</span>
             </div>
-            {form.goalProject && (
-              <div className={styles.summaryRow}>
-                <span className={styles.summaryKey}>Objectif</span>
-                <span className={styles.summaryVal}>{form.goalProject}</span>
-              </div>
-            )}
           </div>
           <div className={styles.creditBox}>
             <span className={styles.creditApp}>VapeDown</span>
@@ -183,7 +143,7 @@ export default function Onboarding() {
             <button className={`btn btn-primary ${styles.cta}`} onClick={finish}>
               Démarrer l'observation →
             </button>
-            <button className={`btn btn-ghost`} onClick={() => setStep(3)}>← Retour</button>
+            <button className={`btn btn-ghost`} onClick={() => setStep(2)}>← Retour</button>
           </div>
         </div>
       )}

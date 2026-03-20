@@ -169,13 +169,11 @@ async function getLogsInRange(fromDaysAgo, toDaysAgo) {
 }
 
 /* ── Plan ── */
-export async function initPlan(baseQuota, reductionRate, goalProject, unitCost) {
+export async function initPlan(baseQuota, reductionRate) {
   await saveProfile({
     phase: 1,
     baseQuota,
     reductionRate,
-    goalProject,
-    unitCost: parseFloat(unitCost) || 0,
     startDate: new Date().toISOString().split('T')[0],
     observationDone: false,
   });
@@ -204,17 +202,6 @@ export async function checkPhaseAdvancement() {
   if (p.phase === 2 && quota <= 10) return 'advance_to_3';
   if (p.phase === 3 && quota <= 5)  return 'advance_to_4';
   return null;
-}
-
-/* ── Savings ── */
-export async function getSavings() {
-  const p = await getProfile();
-  if (!p.startDate || !p.baseQuota || !p.unitCost) return 0;
-  const days = Math.floor((Date.now() - new Date(p.startDate).getTime()) / 86400000);
-  const logs = await getLogs(days + 1);
-  const podsAvoided = Math.max(0, (p.baseQuota * days) - logs.length);
-  const podsPerUnit = 300;
-  return ((podsAvoided / podsPerUnit) * parseFloat(p.unitCost)).toFixed(2);
 }
 
 /* ── Helpers ── */
