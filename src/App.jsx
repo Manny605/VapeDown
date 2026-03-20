@@ -1,25 +1,25 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
-// ─── THEMES (5 dark, 3 light) ─────────────────────────────────────────────────
+// ─── THEMES ──────────────────────────────────────────────────────────────────
 const THEMES = {
-  midnight: { name:"Midnight",   dark:true,  bg:"#0d0d1a", card:"#16162e", border:"#2d2d55", text:"#e2e8f0", muted:"#6b7280", accent:"#818cf8", accentText:"#ffffff", ok:"#34d399", danger:"#f87171" },
-  carbon:   { name:"Carbon",     dark:true,  bg:"#0a0a0a", card:"#1a1a1a", border:"#2e2e2e", text:"#e5e5e5", muted:"#737373", accent:"#f59e0b", accentText:"#000000", ok:"#34d399", danger:"#f87171" },
-  forest:   { name:"Forêt",      dark:true,  bg:"#071a0f", card:"#0d2418", border:"#1a3d25", text:"#d1fae5", muted:"#6b7280", accent:"#34d399", accentText:"#000000", ok:"#34d399", danger:"#f87171" },
-  ocean:    { name:"Océan Nuit", dark:true,  bg:"#050f1e", card:"#0a1e38", border:"#1a3558", text:"#bfdbfe", muted:"#64748b", accent:"#38bdf8", accentText:"#000000", ok:"#34d399", danger:"#f87171" },
-  crimson:  { name:"Crimson",    dark:true,  bg:"#120408", card:"#200812", border:"#40101e", text:"#fecdd3", muted:"#9f1239", accent:"#fb7185", accentText:"#000000", ok:"#34d399", danger:"#f87171" },
-  snow:     { name:"Blanc Pur",  dark:false, bg:"#f8fafc", card:"#ffffff", border:"#e2e8f0", text:"#1e293b", muted:"#94a3b8", accent:"#3b82f6", accentText:"#ffffff", ok:"#10b981", danger:"#ef4444" },
-  sky:      { name:"Ciel",       dark:false, bg:"#eff6ff", card:"#ffffff", border:"#bfdbfe", text:"#1e3a5f", muted:"#64748b", accent:"#2563eb", accentText:"#ffffff", ok:"#10b981", danger:"#ef4444" },
-  mint:     { name:"Menthe",     dark:false, bg:"#f0fdf4", card:"#ffffff", border:"#bbf7d0", text:"#14532d", muted:"#6b7280", accent:"#059669", accentText:"#ffffff", ok:"#059669", danger:"#ef4444" },
+  midnight: { name:"Midnight",  dark:true,  bg:"#0d0d1a", card:"#16162e", border:"#2d2d55", text:"#e2e8f0", muted:"#6b7280", accent:"#818cf8", accentText:"#ffffff", ok:"#34d399", danger:"#f87171" },
+  carbon:   { name:"Carbon",    dark:true,  bg:"#0a0a0a", card:"#1a1a1a", border:"#2e2e2e", text:"#e5e5e5", muted:"#737373", accent:"#f59e0b", accentText:"#000000", ok:"#34d399", danger:"#f87171" },
+  forest:   { name:"Forêt",     dark:true,  bg:"#071a0f", card:"#0d2418", border:"#1a3d25", text:"#d1fae5", muted:"#6b7280", accent:"#34d399", accentText:"#000000", ok:"#34d399", danger:"#f87171" },
+  ocean:    { name:"Océan",     dark:true,  bg:"#050f1e", card:"#0a1e38", border:"#1a3558", text:"#bfdbfe", muted:"#64748b", accent:"#38bdf8", accentText:"#000000", ok:"#34d399", danger:"#f87171" },
+  crimson:  { name:"Crimson",   dark:true,  bg:"#120408", card:"#200812", border:"#40101e", text:"#fecdd3", muted:"#9f1239", accent:"#fb7185", accentText:"#000000", ok:"#34d399", danger:"#f87171" },
+  snow:     { name:"Blanc",     dark:false, bg:"#f8fafc", card:"#ffffff", border:"#e2e8f0", text:"#1e293b", muted:"#94a3b8", accent:"#3b82f6", accentText:"#ffffff", ok:"#10b981", danger:"#ef4444" },
+  sky:      { name:"Ciel",      dark:false, bg:"#eff6ff", card:"#ffffff", border:"#bfdbfe", text:"#1e3a5f", muted:"#64748b", accent:"#2563eb", accentText:"#ffffff", ok:"#10b981", danger:"#ef4444" },
+  mint:     { name:"Menthe",    dark:false, bg:"#f0fdf4", card:"#ffffff", border:"#bbf7d0", text:"#14532d", muted:"#6b7280", accent:"#059669", accentText:"#ffffff", ok:"#059669", danger:"#ef4444" },
 };
 
-// ─── RHYTHMS ──────────────────────────────────────────────────────────────────
+// ─── RHYTHMS ─────────────────────────────────────────────────────────────────
 const RHYTHMS = {
   progressif: { label:"Progressif", emoji:"🌱", pct:8,  colorHex:"#10b981", desc:"−8 % par semaine", detail:"Idéal pour une dépendance faible. Réduction douce et durable." },
   modere:     { label:"Modéré",     emoji:"⚡", pct:15, colorHex:"#3b82f6", desc:"−15 % par semaine", detail:"Bon équilibre entre confort et efficacité." },
-  rapide:     { label:"Rapide",     emoji:"🚀", pct:25, colorHex:"#ef4444", desc:"−25 % par semaine", detail:"Pour ceux qui veulent arrêter rapidement et ont une forte motivation." },
+  rapide:     { label:"Rapide",     emoji:"🚀", pct:25, colorHex:"#ef4444", desc:"−25 % par semaine", detail:"Pour ceux qui veulent arrêter rapidement." },
 };
 
-// ─── MOTIVATIONAL MESSAGES ────────────────────────────────────────────────────
+// ─── MOTIVATIONAL MESSAGES ───────────────────────────────────────────────────
 const MOTIV = (n) => [
   `💪 Courage ${n} ! Vous tenez bon !`,
   `🧠 Chaque minute d'abstention renforce votre volonté.`,
@@ -35,11 +35,11 @@ const MOTIV = (n) => [
   `✨ Vous avancez. C'est tout ce qui compte, ${n}.`,
 ];
 
-// ─── UTILS ────────────────────────────────────────────────────────────────────
-const pad2    = n  => String(Math.max(0, Math.floor(n))).padStart(2, "0");
-const hms     = s  => { if (s <= 0) return "00:00"; const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60; return h>0?`${pad2(h)}:${pad2(m)}:${pad2(sec)}`:`${pad2(m)}:${pad2(sec)}`; };
-const hhmm    = m  => `${pad2(Math.floor(m/60)%24)}:${pad2(m%60)}`;
-const getNow  = () => { const d=new Date(); return d.getHours()*3600+d.getMinutes()*60+d.getSeconds(); };
+// ─── UTILS ───────────────────────────────────────────────────────────────────
+const pad2   = n => String(Math.max(0, Math.floor(n))).padStart(2, "0");
+const hms    = s => { if (s <= 0) return "00:00"; const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60; return h>0?`${pad2(h)}:${pad2(m)}:${pad2(sc)}`:`${pad2(m)}:${pad2(sc)}`; };
+const hhmm   = m => `${pad2(Math.floor(m/60)%24)}:${pad2(m%60)}`;
+const getNow = () => { const d=new Date(); return d.getHours()*3600+d.getMinutes()*60+d.getSeconds(); };
 
 const buildSchedule = ({ limit, sessions, wake, sleep }) => {
   const dur = Math.max(1, Math.round(limit / sessions));
@@ -61,10 +61,10 @@ const genPlan = (startMins, pct) => {
 
 const scoreAddiction = (ans) => {
   let sc = 0, startMins = 60;
-  if (ans.freq === "lt5")   { sc += 0; startMins = 35; }
-  if (ans.freq === "5to15") { sc += 1; startMins = 60; }
-  if (ans.freq === "15to30"){ sc += 2; startMins = 90; }
-  if (ans.freq === "gt30")  { sc += 3; startMins = 120; }
+  if (ans.freq === "lt5")    { sc += 0; startMins = 35; }
+  if (ans.freq === "5to15")  { sc += 1; startMins = 60; }
+  if (ans.freq === "15to30") { sc += 2; startMins = 90; }
+  if (ans.freq === "gt30")   { sc += 3; startMins = 120; }
   if (ans.morning === "yes") sc += 2;
   sc += { never:0, sometimes:1, often:2, always:3 }[ans.anxiety] || 0;
   sc += { lt6m:0, s6m2y:1, s2to5:2, gt5:3 }[ans.duration] || 0;
@@ -73,33 +73,188 @@ const scoreAddiction = (ans) => {
   return { sc, recommended, level, startMins };
 };
 
+// ─── SVG ICONS ───────────────────────────────────────────────────────────────
+const IcHome = ({ color }) => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+    <polyline points="9 22 9 12 15 12 15 22"/>
+  </svg>
+);
+
+const IcCalendar = ({ color }) => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="4" width="18" height="18" rx="2"/>
+    <line x1="16" y1="2" x2="16" y2="6"/>
+    <line x1="8" y1="2" x2="8" y2="6"/>
+    <line x1="3" y1="10" x2="21" y2="10"/>
+  </svg>
+);
+
+const IcTrend = ({ color }) => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+    <polyline points="17 6 23 6 23 12"/>
+  </svg>
+);
+
+const IcSettings = ({ color }) => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="3"/>
+    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+  </svg>
+);
+
+const IcShare = ({ color }) => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
+    <polyline points="16 6 12 2 8 6"/>
+    <line x1="12" y1="2" x2="12" y2="15"/>
+  </svg>
+);
+
+const IcPlus = ({ color }) => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round">
+    <line x1="12" y1="5" x2="12" y2="19"/>
+    <line x1="5" y1="12" x2="19" y2="12"/>
+  </svg>
+);
+
+const IcBell = ({ color }) => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+    <path d="M13.73 21a2 2 0 01-3.46 0"/>
+  </svg>
+);
+
+// ─── INSTALL BANNER ──────────────────────────────────────────────────────────
+function InstallBanner({ T }) {
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [visible, setVisible] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+
+  useEffect(() => {
+    const alreadyInstalled =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true;
+    if (alreadyInstalled) return;
+    if (localStorage.getItem("vd_install_dismissed")) return;
+
+    const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+    setIsIOS(ios);
+    if (ios) { setVisible(true); return; }
+
+    const handler = (e) => { e.preventDefault(); setDeferredPrompt(e); setVisible(true); };
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  const install = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      setDeferredPrompt(null);
+    }
+    setVisible(false);
+  };
+
+  const dismiss = () => {
+    setVisible(false);
+    localStorage.setItem("vd_install_dismissed", "1");
+  };
+
+  if (!visible) return null;
+
+  return (
+    <div style={{
+      margin: "0 16px 12px",
+      background: T.dark
+        ? `linear-gradient(135deg, ${T.accent}28, ${T.accent}10)`
+        : `linear-gradient(135deg, ${T.accent}18, ${T.accent}08)`,
+      border: `1.5px solid ${T.accent}55`,
+      borderRadius: 18,
+      padding: "14px 16px",
+      display: "flex",
+      alignItems: "center",
+      gap: 12,
+    }}>
+      {/* Icon */}
+      <div style={{
+        width: 44, height: 44, borderRadius: 12, background: T.accent,
+        display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+        boxShadow: `0 4px 12px ${T.accent}55`,
+      }}>
+        <span style={{ fontSize: 22 }}>💨</span>
+      </div>
+
+      {/* Text */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: T.text, marginBottom: 2 }}>
+          Installer VapeDown
+        </div>
+        {isIOS ? (
+          <div style={{ fontSize: 11, color: T.muted, lineHeight: 1.4 }}>
+            Appuyez sur{" "}
+            <span style={{ display: "inline-flex", verticalAlign: "middle", margin: "0 2px" }}>
+              <IcShare color={T.accent} />
+            </span>{" "}
+            puis <strong style={{ color: T.text }}>"Sur l'écran d'accueil"</strong>
+          </div>
+        ) : (
+          <div style={{ fontSize: 11, color: T.muted }}>
+            Accès rapide depuis votre écran d'accueil
+          </div>
+        )}
+      </div>
+
+      {/* Actions */}
+      <div style={{ display: "flex", gap: 6, alignItems: "center", flexShrink: 0 }}>
+        {!isIOS && (
+          <button onClick={install} style={{
+            background: T.accent, color: T.accentText, border: "none",
+            borderRadius: 10, padding: "8px 14px", fontSize: 12, fontWeight: 700,
+            cursor: "pointer", display: "flex", alignItems: "center", gap: 4,
+          }}>
+            <IcPlus color={T.accentText} />
+            Ajouter
+          </button>
+        )}
+        <button onClick={dismiss} style={{
+          background: T.border, color: T.muted, border: "none",
+          borderRadius: 10, width: 32, height: 32, fontSize: 16, cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700,
+        }}>×</button>
+      </div>
+    </div>
+  );
+}
+
 // ─── ONBOARDING ───────────────────────────────────────────────────────────────
 function Onboarding({ onComplete, T }) {
-  const [step, setStep]           = useState(0);
-  const [name, setName]           = useState("");
-  const [ans, setAns]             = useState({});
-  const [result, setResult]       = useState(null);
-  const [rhythm, setRhythm]       = useState(null);
-  const [sessions, setSessions]   = useState(6);
+  const [step, setStep]         = useState(0);
+  const [name, setName]         = useState("");
+  const [ans, setAns]           = useState({});
+  const [result, setResult]     = useState(null);
+  const [rhythm, setRhythm]     = useState(null);
+  const [sessions, setSessions] = useState(6);
 
   const QUESTIONS = [
-    { key:"freq",     q:"Combien de fois vapotez-vous par jour ?", opts:[
+    { key:"freq",    q:"Combien de fois vapotez-vous par jour ?", opts:[
       { v:"lt5",    l:"Moins de 5 fois",  s:"Usage très léger" },
       { v:"5to15",  l:"5 à 15 fois",      s:"Usage modéré" },
       { v:"15to30", l:"15 à 30 fois",     s:"Usage intensif" },
       { v:"gt30",   l:"Plus de 30 fois",  s:"Usage très intensif" },
     ]},
-    { key:"morning",  q:"Vapotez-vous dans les 30 min après le réveil ?", opts:[
+    { key:"morning", q:"Vapotez-vous dans les 30 min après le réveil ?", opts:[
       { v:"no",  l:"Non",  s:"Je peux attendre sans problème" },
       { v:"yes", l:"Oui",  s:"C'est souvent mon premier réflexe" },
     ]},
-    { key:"anxiety",  q:"Comment vous sentez-vous sans pouvoir vapoter ?", opts:[
-      { v:"never",     l:"Serein(e)",      s:"Aucune anxiété particulière" },
+    { key:"anxiety", q:"Comment vous sentez-vous sans pouvoir vapoter ?", opts:[
+      { v:"never",     l:"Serein(e)",         s:"Aucune anxiété particulière" },
       { v:"sometimes", l:"Légèrement gêné(e)", s:"Un peu distrait(e)" },
-      { v:"often",     l:"Anxieux(se)",    s:"Difficile de me concentrer" },
-      { v:"always",    l:"Très irritable", s:"Je pense à ça constamment" },
+      { v:"often",     l:"Anxieux(se)",        s:"Difficile de me concentrer" },
+      { v:"always",    l:"Très irritable",     s:"Je pense à ça constamment" },
     ]},
-    { key:"duration",  q:"Depuis combien de temps vapotez-vous ?", opts:[
+    { key:"duration", q:"Depuis combien de temps vapotez-vous ?", opts:[
       { v:"lt6m",  l:"Moins de 6 mois", s:"Habitude récente" },
       { v:"s6m2y", l:"6 mois à 2 ans",  s:"Habitude installée" },
       { v:"s2to5", l:"2 à 5 ans",       s:"Habitude profonde" },
@@ -116,30 +271,86 @@ function Onboarding({ onComplete, T }) {
     } else { setStep(step + 1); }
   };
 
-  const st = { // shared styles
-    wrap: { minHeight:"100vh", background:T.bg, display:"flex", alignItems:"center", justifyContent:"center", padding:"20px 16px" },
-    card: { background:T.card, borderRadius:24, padding:"30px 24px", maxWidth:400, width:"100%", boxShadow: T.dark ? "0 8px 40px rgba(0,0,0,0.5)" : "0 4px 24px rgba(0,0,0,0.1)" },
-    h1:   { fontSize:21, fontWeight:800, color:T.text, textAlign:"center", marginBottom:6 },
-    sub:  { fontSize:13, color:T.muted, textAlign:"center", marginBottom:24, lineHeight:1.6 },
-    optBtn: (sel, col) => ({ display:"block", width:"100%", textAlign:"left", background: sel ? (col||T.accent)+"22" : T.bg, border:`2px solid ${sel ? (col||T.accent) : T.border}`, borderRadius:14, padding:"14px 16px", marginBottom:10, cursor:"pointer", transition:"all 0.15s" }),
-    inp:  { width:"100%", background:T.bg, border:`2px solid ${T.border}`, borderRadius:12, padding:"14px 16px", fontSize:16, color:T.text, outline:"none", boxSizing:"border-box" },
-    btn:  (col) => ({ background:col||T.accent, color:T.accentText, border:"none", borderRadius:14, padding:"15px 24px", fontSize:16, fontWeight:700, width:"100%", cursor:"pointer", marginTop:12 }),
+  const card = {
+    minHeight: "100dvh",
+    background: T.bg,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "env(safe-area-inset-top, 20px) 16px env(safe-area-inset-bottom, 20px)",
+    fontFamily: "'Poppins', system-ui, sans-serif",
   };
 
-  // Step 0 — Name
+  const inner = {
+    background: T.card,
+    borderRadius: 28,
+    padding: "32px 24px",
+    maxWidth: 400,
+    width: "100%",
+    boxShadow: T.dark ? "0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05)" : "0 8px 40px rgba(0,0,0,0.12)",
+    border: `1px solid ${T.border}`,
+  };
+
+  const optBtn = (sel, col) => ({
+    display: "block", width: "100%", textAlign: "left",
+    background: sel ? (col || T.accent) + "18" : "transparent",
+    border: `2px solid ${sel ? (col || T.accent) : T.border}`,
+    borderRadius: 16, padding: "14px 16px", marginBottom: 10,
+    cursor: "pointer", transition: "all 0.15s",
+    transform: sel ? "scale(1.01)" : "scale(1)",
+  });
+
+  const primaryBtn = (col) => ({
+    background: col || T.accent, color: T.accentText,
+    border: "none", borderRadius: 16, padding: "16px 24px",
+    fontSize: 16, fontWeight: 700, width: "100%", cursor: "pointer",
+    marginTop: 16, boxShadow: `0 4px 20px ${(col || T.accent)}55`,
+    transition: "transform 0.1s",
+  });
+
+  // Step 0 — Welcome & Name
   if (step === 0) return (
-    <div style={st.wrap}><div style={st.card}>
-      <div style={{ fontSize:52, textAlign:"center", marginBottom:12 }}>💨</div>
-      <div style={st.h1}>VapeControl</div>
-      <div style={st.sub}>Votre programme personnalisé pour réduire progressivement la cigarette électronique.</div>
-      <label style={{ fontSize:13, fontWeight:600, color:T.text, display:"block", marginBottom:8 }}>Votre prénom</label>
-      <input style={st.inp} placeholder="Ex : Marie" value={name} autoFocus
-        onChange={e => setName(e.target.value)}
-        onKeyDown={e => e.key === "Enter" && name.trim() && setStep(1)} />
-      <button style={{ ...st.btn(), opacity: name.trim() ? 1 : 0.45 }} onClick={() => name.trim() && setStep(1)}>
-        Commencer l'évaluation →
-      </button>
-    </div></div>
+    <div style={card}>
+      <div style={inner}>
+        <div style={{ textAlign: "center", marginBottom: 24 }}>
+          <div style={{
+            width: 80, height: 80, borderRadius: 24, margin: "0 auto 16px",
+            background: `linear-gradient(135deg, ${T.accent}, ${T.accent}88)`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 40, boxShadow: `0 8px 30px ${T.accent}44`,
+          }}>💨</div>
+          <div style={{ fontSize: 26, fontWeight: 800, color: T.text, letterSpacing: "-0.5px" }}>VapeDown</div>
+          <div style={{ fontSize: 14, color: T.muted, marginTop: 6, lineHeight: 1.6 }}>
+            Votre programme personnalisé pour<br/>réduire progressivement le vapotage.
+          </div>
+        </div>
+
+        <label style={{ fontSize: 13, fontWeight: 600, color: T.text, display: "block", marginBottom: 8 }}>
+          Votre prénom
+        </label>
+        <input
+          style={{
+            width: "100%", background: T.bg, border: `2px solid ${T.border}`,
+            borderRadius: 14, padding: "14px 16px", fontSize: 16, color: T.text,
+            outline: "none", boxSizing: "border-box", fontFamily: "'Poppins', system-ui, sans-serif",
+            transition: "border-color 0.15s",
+          }}
+          placeholder="Ex : Marie"
+          value={name}
+          autoFocus
+          onChange={e => setName(e.target.value)}
+          onKeyDown={e => e.key === "Enter" && name.trim() && setStep(1)}
+          onFocus={e => e.target.style.borderColor = T.accent}
+          onBlur={e => e.target.style.borderColor = T.border}
+        />
+        <button
+          style={{ ...primaryBtn(), opacity: name.trim() ? 1 : 0.45 }}
+          onClick={() => name.trim() && setStep(1)}
+        >
+          Commencer l'évaluation →
+        </button>
+      </div>
+    </div>
   );
 
   // Steps 1-4 — Questions
@@ -147,66 +358,112 @@ function Onboarding({ onComplete, T }) {
   if (qi >= 0 && qi < QUESTIONS.length) {
     const Q = QUESTIONS[qi];
     return (
-      <div style={st.wrap}><div style={st.card}>
-        {/* dots */}
-        <div style={{ display:"flex", gap:6, justifyContent:"center", marginBottom:22 }}>
-          {QUESTIONS.map((_,i) => <div key={i} style={{ width: i===qi?20:8, height:8, borderRadius:4, background: i<=qi ? T.accent : T.border, transition:"all 0.3s" }} />)}
-        </div>
-        <div style={st.h1}>{Q.q}</div>
-        <div style={{ marginTop:18 }}>
+      <div style={card}>
+        <div style={inner}>
+          {/* Progress dots */}
+          <div style={{ display: "flex", gap: 6, justifyContent: "center", marginBottom: 28 }}>
+            {QUESTIONS.map((_, i) => (
+              <div key={i} style={{
+                height: 6, borderRadius: 3,
+                width: i === qi ? 28 : 8,
+                background: i <= qi ? T.accent : T.border,
+                transition: "all 0.3s",
+              }} />
+            ))}
+          </div>
+
+          <div style={{ fontSize: 12, color: T.muted, marginBottom: 8, textAlign: "center" }}>
+            Bonjour {name} · Question {qi + 1}/{QUESTIONS.length}
+          </div>
+          <div style={{ fontSize: 19, fontWeight: 700, color: T.text, textAlign: "center", marginBottom: 22, lineHeight: 1.3 }}>
+            {Q.q}
+          </div>
+
           {Q.opts.map(o => (
-            <button key={o.v} style={st.optBtn(ans[Q.key]===o.v)} onClick={() => pick(Q.key, o.v)}>
-              <div style={{ fontSize:15, fontWeight:700, color:T.text }}>{o.l}</div>
-              <div style={{ fontSize:12, color:T.muted, marginTop:2 }}>{o.s}</div>
+            <button key={o.v} style={optBtn(ans[Q.key] === o.v)} onClick={() => pick(Q.key, o.v)}>
+              <div style={{ fontSize: 15, fontWeight: 600, color: T.text }}>{o.l}</div>
+              <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>{o.s}</div>
             </button>
           ))}
         </div>
-        <div style={{ fontSize:12, color:T.muted, textAlign:"center", marginTop:8 }}>Bonjour {name} · Question {qi+1}/{QUESTIONS.length}</div>
-      </div></div>
+      </div>
     );
   }
 
-  // Result + rhythm choice
+  // Step 5 — Results
   if (result) return (
-    <div style={st.wrap}><div style={st.card}>
-      <div style={{ fontSize:44, textAlign:"center", marginBottom:8 }}>📊</div>
-      <div style={st.h1}>Votre profil, {name}</div>
-
-      <div style={{ background:T.accent+"22", border:`2px solid ${T.accent}55`, borderRadius:14, padding:16, marginBottom:20, textAlign:"center" }}>
-        <div style={{ fontSize:12, color:T.muted, marginBottom:4 }}>Niveau de dépendance estimé</div>
-        <div style={{ fontSize:18, fontWeight:800, color:T.text }}>{result.level}</div>
-        <div style={{ fontSize:12, color:T.muted, marginTop:4 }}>Limite de départ : <strong style={{ color:T.text }}>{result.startMins} min/jour</strong></div>
-      </div>
-
-      <div style={{ fontSize:14, fontWeight:700, color:T.text, marginBottom:10 }}>Choisissez votre rythme de réduction :</div>
-      {Object.entries(RHYTHMS).map(([k, r]) => {
-        const sel = rhythm === k, isRec = result.recommended === k;
-        return (
-          <button key={k} style={st.optBtn(sel, r.colorHex)} onClick={() => setRhythm(k)}>
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
-              <div>
-                <div style={{ fontSize:15, fontWeight:700, color:T.text }}>{r.emoji} {r.label} <span style={{ fontSize:13, color:T.muted, fontWeight:400 }}>· {r.desc}</span></div>
-                <div style={{ fontSize:12, color:T.muted, marginTop:3 }}>{r.detail}</div>
-              </div>
-              {isRec && <div style={{ background:r.colorHex, color:"#fff", borderRadius:999, padding:"3px 10px", fontSize:10, fontWeight:700, flexShrink:0, marginLeft:8 }}>Recommandé</div>}
-            </div>
-          </button>
-        );
-      })}
-
-      <div style={{ marginTop:18, marginBottom:6 }}>
-        <div style={{ fontSize:13, fontWeight:600, color:T.text, marginBottom:8 }}>Sessions de vapotage par jour</div>
-        <div style={{ display:"flex", gap:6 }}>
-          {[3,4,5,6,8,10].map(n => (
-            <button key={n} onClick={() => setSessions(n)} style={{ flex:1, padding:"10px 0", borderRadius:10, border:`2px solid ${sessions===n ? T.accent : T.border}`, background: sessions===n ? T.accent+"22" : T.bg, color:T.text, fontWeight:700, cursor:"pointer", fontSize:14 }}>{n}</button>
-          ))}
+    <div style={{ ...card, alignItems: "flex-start", overflowY: "auto" }}>
+      <div style={{ ...inner, margin: "24px auto" }}>
+        <div style={{ textAlign: "center", marginBottom: 20 }}>
+          <div style={{ fontSize: 44, marginBottom: 8 }}>📊</div>
+          <div style={{ fontSize: 20, fontWeight: 800, color: T.text }}>Votre profil, {name}</div>
         </div>
-      </div>
 
-      <button style={st.btn(RHYTHMS[rhythm||"modere"].colorHex)} onClick={() => rhythm && onComplete({ name, rhythm, startMins: result.startMins, sessions, week:1, level: result.level })}>
-        🚀 Démarrer mon programme
-      </button>
-    </div></div>
+        <div style={{
+          background: T.accent + "18", border: `2px solid ${T.accent}44`,
+          borderRadius: 18, padding: "16px", marginBottom: 20, textAlign: "center",
+        }}>
+          <div style={{ fontSize: 11, color: T.muted, marginBottom: 4, textTransform: "uppercase", letterSpacing: 1 }}>
+            Dépendance estimée
+          </div>
+          <div style={{ fontSize: 20, fontWeight: 800, color: T.text }}>{result.level}</div>
+          <div style={{ fontSize: 12, color: T.muted, marginTop: 4 }}>
+            Limite de départ : <strong style={{ color: T.accent }}>{result.startMins} min/jour</strong>
+          </div>
+        </div>
+
+        <div style={{ fontSize: 13, fontWeight: 700, color: T.text, marginBottom: 10 }}>
+          Choisissez votre rythme :
+        </div>
+        {Object.entries(RHYTHMS).map(([k, r]) => {
+          const sel = rhythm === k, isRec = result.recommended === k;
+          return (
+            <button key={k} style={optBtn(sel, r.colorHex)} onClick={() => setRhythm(k)}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: T.text }}>
+                    {r.emoji} {r.label}
+                    <span style={{ fontSize: 12, color: T.muted, fontWeight: 400 }}> · {r.desc}</span>
+                  </div>
+                  <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>{r.detail}</div>
+                </div>
+                {isRec && (
+                  <div style={{
+                    background: r.colorHex, color: "#fff", borderRadius: 999,
+                    padding: "3px 10px", fontSize: 10, fontWeight: 700, flexShrink: 0, marginLeft: 8,
+                  }}>Recommandé</div>
+                )}
+              </div>
+            </button>
+          );
+        })}
+
+        <div style={{ marginTop: 20, marginBottom: 8 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 10 }}>
+            Sessions de vapotage par jour
+          </div>
+          <div style={{ display: "flex", gap: 8 }}>
+            {[3, 4, 5, 6, 8, 10].map(n => (
+              <button key={n} onClick={() => setSessions(n)} style={{
+                flex: 1, padding: "11px 0", borderRadius: 12,
+                border: `2px solid ${sessions === n ? T.accent : T.border}`,
+                background: sessions === n ? T.accent + "22" : T.bg,
+                color: sessions === n ? T.accent : T.text,
+                fontWeight: 700, cursor: "pointer", fontSize: 14,
+                transition: "all 0.15s",
+              }}>{n}</button>
+            ))}
+          </div>
+        </div>
+
+        <button
+          style={primaryBtn(RHYTHMS[rhythm || "modere"].colorHex)}
+          onClick={() => rhythm && onComplete({ name, rhythm, startMins: result.startMins, sessions, week: 1, level: result.level })}
+        >
+          🚀 Démarrer mon programme
+        </button>
+      </div>
+    </div>
   );
 
   return null;
@@ -237,7 +494,6 @@ export default function VapeControl() {
     const p = await Notification.requestPermission(); setNotifOn(p === "granted");
   };
 
-  // Recompute schedule whenever profile or cfg changes
   useEffect(() => {
     if (!profile) return;
     const plan = genPlan(profile.startMins, RHYTHMS[profile.rhythm].pct);
@@ -246,56 +502,45 @@ export default function VapeControl() {
     notifSent.current.clear();
   }, [profile, cfg]);
 
-  const effEnd = s => s.start + s.baseDur + s.bonus;
-  const nowMin = Math.floor(nowSec / 60);
-
-  const curSess  = sched.find(s => s.status === "pending" && nowMin >= s.start && nowMin < effEnd(s));
-  const nextSess = sched.find(s => s.status === "pending" && s.start > nowMin);
+  const effEnd     = s => s.start + s.baseDur + s.bonus;
+  const nowMin     = Math.floor(nowSec / 60);
+  const curSess    = sched.find(s => s.status === "pending" && nowMin >= s.start && nowMin < effEnd(s));
+  const nextSess   = sched.find(s => s.status === "pending" && s.start > nowMin);
   const isVaping   = !!curSess;
   const secsLeft   = curSess  ? Math.max(0, effEnd(curSess)  * 60 - nowSec) : 0;
   const secsToNext = nextSess ? Math.max(0, nextSess.start   * 60 - nowSec) : 0;
 
-  // Session transitions + motivational alerts
   useEffect(() => {
     if (!profile) return;
     const msgs = MOTIV(profile.name);
     const rnd = () => msgs[Math.floor(Math.random() * msgs.length)];
-
     sched.forEach(s => {
       if (s.status !== "pending") return;
       const end = effEnd(s);
-
-      // Session start
       const kS = `S${s.id}`;
       if (nowMin === s.start && !notifSent.current.has(kS)) {
         notifSent.current.add(kS);
         push("🟢 À vous de jouer !", `Session de ${s.baseDur + s.bonus} min autorisée. Profitez-en !`);
       }
-      // 1-min warning
       const kW = `W${s.id}`;
       if (nowMin === end - 1 && !notifSent.current.has(kW)) {
         notifSent.current.add(kW);
         push("⚠️ 1 minute restante", "Terminez bientôt votre session.");
       }
-      // Session end
       const kE = `E${s.id}`;
       if (nowMin >= end && !notifSent.current.has(kE)) {
         notifSent.current.add(kE);
         push("🔴 Session terminée", nextSess ? `Prochaine session à ${hhmm(nextSess.start)} — tenez bon !` : "Journée terminée ! Bravo 🎉");
-        setSched(p => p.map(x => x.id === s.id ? { ...x, status:"done" } : x));
+        setSched(p => p.map(x => x.id === s.id ? { ...x, status: "done" } : x));
       }
     });
-
-    // Motivational notifications during abstinence (not in a vaping window)
     if (!isVaping && nextSess) {
-      const abstDur  = nextSess.start * 60 - (curSess ? effEnd(curSess) * 60 : nowSec);
-      const halfway  = nextSess.start * 60 - Math.round(abstDur / 2);
+      const abstDur = nextSess.start * 60 - (curSess ? effEnd(curSess) * 60 : nowSec);
+      const halfway = nextSess.start * 60 - Math.round(abstDur / 2);
       const fifteenB = nextSess.start * 60 - 15 * 60;
-
       const kMH = `MH${nextSess.id}`;
       if (nowSec >= halfway && nowSec < halfway + 60 && !notifSent.current.has(kMH)) {
-        notifSent.current.add(kMH);
-        push("✨ Motiviation", rnd());
+        notifSent.current.add(kMH); push("✨ Motivation", rnd());
       }
       const kM15 = `M15${nextSess.id}`;
       if (nowSec >= fifteenB && nowSec < fifteenB + 60 && !notifSent.current.has(kM15)) {
@@ -308,165 +553,280 @@ export default function VapeControl() {
   const skipSession = () => {
     if (!curSess || !profile) return;
     const dur = curSess.baseDur + curSess.bonus;
-    const rec = Math.round(dur * (1 - 25 / 100));
+    const rec = Math.round(dur * 0.75);
     const futIds = sched.filter(s => s.status === "pending" && s.id !== curSess.id && s.start > nowMin).map(s => s.id);
     const bonus = futIds.length > 0 ? Math.floor(rec / futIds.length) : 0;
     setSched(p => p.map(s => {
-      if (s.id === curSess.id) return { ...s, status:"skipped" };
+      if (s.id === curSess.id) return { ...s, status: "skipped" };
       if (futIds.includes(s.id)) return { ...s, bonus: s.bonus + bonus };
       return s;
     }));
-    push("⏭️ Session reportée", futIds.length > 0 ? `+${bonus} min redistribuées. ${MOTIV(profile.name)[4]}` : "Aucune session restante aujourd'hui.");
+    push("⏭️ Session reportée", futIds.length > 0 ? `+${bonus} min redistribuées.` : "Aucune session restante.");
   };
 
-  const applySettings = () => {
-    setCfg(editCfg);
-    setTab("home");
-  };
+  const applySettings = () => { setCfg(editCfg); setTab("home"); };
 
-  const plan = profile ? genPlan(profile.startMins, RHYTHMS[profile.rhythm].pct) : [];
+  const plan       = profile ? genPlan(profile.startMins, RHYTHMS[profile.rhythm].pct) : [];
   const todayLimit = plan[cfg.week - 1]?.mins ?? 0;
-  const statDone    = sched.filter(s => s.status === "done").length;
+  const statDone   = sched.filter(s => s.status === "done").length;
   const statSkipped = sched.filter(s => s.status === "skipped").length;
-  const vapedMins   = sched.filter(s => s.status === "done").reduce((a, s) => a + s.baseDur + s.bonus, 0);
-  const dayDone = !isVaping && secsToNext === 0 && sched.length > 0;
+  const vapedMins  = sched.filter(s => s.status === "done").reduce((a, s) => a + s.baseDur + s.bonus, 0);
+  const dayDone    = !isVaping && secsToNext === 0 && sched.length > 0;
 
   if (!profile) return <Onboarding T={T} onComplete={p => { setProfile(p); setCfg(c => ({ ...c, sessions: p.sessions })); setEditCfg(c => ({ ...c, sessions: p.sessions })); }} />;
 
   const NAV = [
-    { id:"home",     icon:"🏠", label:"Accueil"     },
-    { id:"today",    icon:"📅", label:"Aujourd'hui" },
-    { id:"plan",     icon:"📈", label:"Programme"   },
-    { id:"settings", icon:"⚙️", label:"Réglages"   },
+    { id:"home",     Icon:IcHome,     label:"Accueil"     },
+    { id:"today",    Icon:IcCalendar, label:"Aujourd'hui" },
+    { id:"plan",     Icon:IcTrend,    label:"Programme"   },
+    { id:"settings", Icon:IcSettings, label:"Réglages"    },
   ];
 
+  const headerGrad = isVaping
+    ? `linear-gradient(135deg, ${T.ok}ee, ${T.ok}99)`
+    : `linear-gradient(135deg, ${T.accent}ee, ${T.accent}99)`;
+
   return (
-    <div style={{ fontFamily:"system-ui,sans-serif", maxWidth:430, margin:"0 auto", minHeight:"100vh", display:"flex", flexDirection:"column", background:T.bg }}>
+    <div style={{
+      fontFamily: "'Poppins', system-ui, sans-serif",
+      maxWidth: 430, margin: "0 auto",
+      minHeight: "100dvh",
+      display: "flex", flexDirection: "column",
+      background: T.bg,
+    }}>
 
       {/* Header */}
       <div style={{
-        background: isVaping
-          ? `linear-gradient(135deg,${T.ok}cc,${T.ok}88)`
-          : `linear-gradient(135deg,${T.accent}cc,${T.accent}88)`,
-        color:"white", padding:"16px 20px 14px", textAlign:"center",
-        boxShadow: T.dark ? "0 2px 12px rgba(0,0,0,0.4)" : "0 2px 8px rgba(0,0,0,0.12)"
+        background: headerGrad,
+        color: "white",
+        padding: `calc(env(safe-area-inset-top, 0px) + 14px) 20px 14px`,
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        boxShadow: T.dark ? "0 4px 20px rgba(0,0,0,0.5)" : "0 2px 12px rgba(0,0,0,0.15)",
+        position: "sticky", top: 0, zIndex: 10,
       }}>
-        <div style={{ fontSize:11, opacity:0.8, marginBottom:2 }}>
-          Bonjour {profile.name} · Semaine {cfg.week} · {RHYTHMS[profile.rhythm].emoji} {RHYTHMS[profile.rhythm].label}
+        <div>
+          <div style={{ fontSize: 11, opacity: 0.8, marginBottom: 1 }}>
+            Bonjour {profile.name} · Sem. {cfg.week}
+          </div>
+          <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: "-0.3px" }}>
+            💨 VapeDown
+          </div>
         </div>
-        <div style={{ fontSize:20, fontWeight:800, letterSpacing:"-0.4px" }}>💨 VapeControl</div>
+        <div style={{
+          background: "rgba(255,255,255,0.2)", borderRadius: 12, padding: "6px 12px",
+          fontSize: 12, fontWeight: 600, backdropFilter: "blur(8px)",
+        }}>
+          {RHYTHMS[profile.rhythm].emoji} {RHYTHMS[profile.rhythm].label}
+        </div>
       </div>
 
       {/* Content */}
-      <div style={{ flex:1, overflowY:"auto", paddingBottom:76 }}>
-        {tab==="home"     && <HomeView     {...{isVaping,secsLeft,secsToNext,curSess,nextSess,sched,statDone,statSkipped,vapedMins,todayLimit,cfg,profile,plan,dayDone,skipSession,notifOn,askNotif,effEnd,T}} />}
-        {tab==="today"    && <TodayView    {...{sched,nowMin,effEnd,T}} />}
-        {tab==="plan"     && <PlanView     {...{plan,cfg,profile,T}} />}
-        {tab==="settings" && <SettingsView {...{editCfg,setEditCfg,apply:applySettings,profile,setProfile,themeName,setThemeName,T}} />}
+      <div style={{ flex: 1, overflowY: "auto", paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 76px)" }}>
+        {tab === "home"     && <HomeView     {...{isVaping,secsLeft,secsToNext,curSess,nextSess,sched,statDone,statSkipped,vapedMins,todayLimit,cfg,profile,plan,dayDone,skipSession,notifOn,askNotif,effEnd,T}} />}
+        {tab === "today"    && <TodayView    {...{sched,nowMin,effEnd,T}} />}
+        {tab === "plan"     && <PlanView     {...{plan,cfg,profile,T}} />}
+        {tab === "settings" && <SettingsView {...{editCfg,setEditCfg,apply:applySettings,profile,setProfile,themeName,setThemeName,T}} />}
       </div>
 
       {/* Bottom Nav */}
-      <div style={{ position:"fixed", bottom:0, left:"50%", transform:"translateX(-50%)", width:"100%", maxWidth:430, background:T.card, borderTop:`1px solid ${T.border}`, display:"flex", boxShadow:"0 -2px 12px rgba(0,0,0,0.2)" }}>
-        {NAV.map(({ id, icon, label }) => (
-          <button key={id} onClick={() => setTab(id)} style={{ flex:1, padding:"10px 0 8px", border:"none", background:"transparent", color: tab===id ? T.accent : T.muted, cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", gap:3, borderTop: tab===id ? `2px solid ${T.accent}` : "2px solid transparent" }}>
-            <span style={{ fontSize:21 }}>{icon}</span>
-            <span style={{ fontSize:10, fontWeight: tab===id ? 700 : 400 }}>{label}</span>
-          </button>
-        ))}
+      <div style={{
+        position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)",
+        width: "100%", maxWidth: 430,
+        background: T.dark ? T.card + "f0" : T.card,
+        borderTop: `1px solid ${T.border}`,
+        display: "flex",
+        paddingBottom: "env(safe-area-inset-bottom, 0px)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        boxShadow: "0 -4px 20px rgba(0,0,0,0.15)",
+      }}>
+        {NAV.map(({ id, Icon, label }) => {
+          const active = tab === id;
+          return (
+            <button key={id} onClick={() => setTab(id)} style={{
+              flex: 1, padding: "10px 0 8px", border: "none",
+              background: "transparent",
+              cursor: "pointer",
+              display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+              transition: "opacity 0.15s",
+            }}>
+              <div style={{
+                width: 44, height: 32, borderRadius: 10,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                background: active ? T.accent + "22" : "transparent",
+                transition: "background 0.2s",
+              }}>
+                <Icon color={active ? T.accent : T.muted} />
+              </div>
+              <span style={{ fontSize: 10, fontWeight: active ? 700 : 400, color: active ? T.accent : T.muted }}>
+                {label}
+              </span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
 }
 
-// ─── HOME VIEW ────────────────────────────────────────────────────────────────
+// ─── HOME VIEW ───────────────────────────────────────────────────────────────
 function HomeView({ isVaping, secsLeft, secsToNext, curSess, nextSess, sched, statDone, statSkipped, vapedMins, todayLimit, cfg, profile, plan, dayDone, skipSession, notifOn, askNotif, effEnd, T }) {
   const progress = cfg.sessions > 0 ? statDone / cfg.sessions : 0;
   const sessIdx  = curSess ? sched.findIndex(s => s === curSess) + 1 : 0;
 
+  const stateColor = isVaping || dayDone ? T.ok : T.danger;
+  const stateBg    = (isVaping || dayDone ? T.ok : T.danger) + "14";
+  const stateBorder = (isVaping || dayDone ? T.ok : T.danger) + "44";
+
   return (
-    <div style={{ padding:"12px 16px" }}>
+    <div style={{ padding: "16px 16px 8px" }}>
+
+      {/* Install Banner */}
+      <InstallBanner T={T} />
 
       {/* Notification banner */}
       {!notifOn && (
-        <div style={{ background:T.accent+"18", border:`1px solid ${T.accent}44`, borderRadius:12, padding:"12px 16px", marginBottom:12, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-          <div>
-            <div style={{ fontSize:13, fontWeight:600, color:T.text }}>🔔 Activez les notifications</div>
-            <div style={{ fontSize:12, color:T.muted, marginTop:1 }}>Pour les alertes et messages de motivation</div>
+        <div style={{
+          background: T.accent + "14", border: `1.5px solid ${T.accent}44`,
+          borderRadius: 16, padding: "12px 16px", marginBottom: 14,
+          display: "flex", alignItems: "center", gap: 12,
+        }}>
+          <div style={{ flexShrink: 0, opacity: 0.8 }}>
+            <IcBell color={T.accent} />
           </div>
-          <button onClick={askNotif} style={{ background:T.accent, color:T.accentText, border:"none", borderRadius:8, padding:"7px 13px", fontSize:12, fontWeight:700, cursor:"pointer", flexShrink:0 }}>Activer</button>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Activez les notifications</div>
+            <div style={{ fontSize: 11, color: T.muted, marginTop: 1 }}>Alertes de session et messages de motivation</div>
+          </div>
+          <button onClick={askNotif} style={{
+            background: T.accent, color: T.accentText, border: "none",
+            borderRadius: 10, padding: "8px 14px", fontSize: 12, fontWeight: 700,
+            cursor: "pointer", flexShrink: 0,
+          }}>Activer</button>
         </div>
       )}
 
-      {/* Main status card */}
+      {/* Main Status Card */}
       <div style={{
-        background: isVaping ? T.ok+"18" : dayDone ? T.ok+"18" : T.danger+"12",
-        border: `2px solid ${isVaping ? T.ok+"55" : dayDone ? T.ok+"55" : T.danger+"44"}`,
-        borderRadius:22, padding:"26px 20px", textAlign:"center", marginBottom:12
+        background: stateBg, border: `2px solid ${stateBorder}`,
+        borderRadius: 24, padding: "28px 20px", textAlign: "center", marginBottom: 14,
+        boxShadow: `0 8px 30px ${stateColor}18`,
       }}>
-        {/* Badge */}
-        <div style={{ display:"inline-flex", alignItems:"center", gap:8, background: isVaping ? T.ok+"25" : dayDone ? T.ok+"25" : T.danger+"25", color: isVaping||dayDone ? T.ok : T.danger, borderRadius:999, padding:"6px 16px", fontWeight:700, fontSize:13, marginBottom:18, border:`1.5px solid ${isVaping||dayDone ? T.ok+"55" : T.danger+"44"}` }}>
-          <span style={{ display:"inline-block", width:8, height:8, borderRadius:"50%", background: isVaping||dayDone ? T.ok : T.danger, boxShadow: isVaping ? `0 0 6px ${T.ok}` : "" }} />
-          {isVaping ? "🟢 VAPOTAGE AUTORISÉ" : dayDone ? "✅ JOURNÉE TERMINÉE" : "🔴 PÉRIODE D'ABSTENTION"}
+        {/* Status badge */}
+        <div style={{
+          display: "inline-flex", alignItems: "center", gap: 8,
+          background: stateColor + "22", color: stateColor,
+          borderRadius: 999, padding: "6px 16px", fontWeight: 700, fontSize: 12,
+          marginBottom: 20, border: `1.5px solid ${stateColor}44`,
+          letterSpacing: 0.5, textTransform: "uppercase",
+        }}>
+          <span style={{
+            display: "inline-block", width: 8, height: 8, borderRadius: "50%",
+            background: stateColor,
+            boxShadow: isVaping ? `0 0 8px ${T.ok}, 0 0 16px ${T.ok}88` : "none",
+            animation: isVaping ? "pulse 2s infinite" : "none",
+          }} />
+          {isVaping ? "Vapotage autorisé" : dayDone ? "Journée terminée" : "Période d'abstention"}
         </div>
 
         {isVaping ? (<>
-          <div style={{ fontSize:12, color:T.muted, marginBottom:4 }}>Temps restant — session {sessIdx}/{cfg.sessions}</div>
-          <div style={{ fontSize:72, fontWeight:800, color:T.ok, fontFamily:"monospace", lineHeight:1, marginBottom:8 }}>{hms(secsLeft)}</div>
-          <div style={{ fontSize:13, color:T.muted }}>Durée totale : {curSess.baseDur + curSess.bonus} min{nextSess ? ` · Prochaine à ${hhmm(nextSess.start)}` : ""}</div>
+          <div style={{ fontSize: 12, color: T.muted, marginBottom: 6 }}>
+            Temps restant · Session {sessIdx}/{cfg.sessions}
+          </div>
+          <div style={{ fontSize: 68, fontWeight: 800, color: T.ok, fontFamily: "monospace", lineHeight: 1, marginBottom: 10, letterSpacing: "-2px" }}>
+            {hms(secsLeft)}
+          </div>
+          <div style={{ fontSize: 13, color: T.muted }}>
+            Durée totale : <strong style={{ color: T.text }}>{curSess.baseDur + curSess.bonus} min</strong>
+            {nextSess ? ` · Prochaine à ${hhmm(nextSess.start)}` : ""}
+          </div>
         </>) : secsToNext > 0 ? (<>
-          <div style={{ fontSize:12, color:T.muted, marginBottom:4 }}>Prochaine session dans</div>
-          <div style={{ fontSize:72, fontWeight:800, color:T.danger, fontFamily:"monospace", lineHeight:1, marginBottom:8 }}>{hms(secsToNext)}</div>
-          {nextSess && <div style={{ fontSize:13, color:T.muted }}>À {hhmm(nextSess.start)} · Durée : {nextSess.baseDur + nextSess.bonus} min</div>}
-          {/* Motivational tip */}
-          <div style={{ marginTop:14, background:T.accent+"15", borderRadius:12, padding:"10px 14px" }}>
-            <div style={{ fontSize:13, color:T.text, fontStyle:"italic" }}>{MOTIV(profile.name)[Math.floor(Date.now() / 60000) % MOTIV(profile.name).length]}</div>
+          <div style={{ fontSize: 12, color: T.muted, marginBottom: 6 }}>Prochaine session dans</div>
+          <div style={{ fontSize: 68, fontWeight: 800, color: T.danger, fontFamily: "monospace", lineHeight: 1, marginBottom: 10, letterSpacing: "-2px" }}>
+            {hms(secsToNext)}
+          </div>
+          {nextSess && (
+            <div style={{ fontSize: 13, color: T.muted }}>
+              À <strong style={{ color: T.text }}>{hhmm(nextSess.start)}</strong> · {nextSess.baseDur + nextSess.bonus} min
+            </div>
+          )}
+          <div style={{ marginTop: 16, background: T.accent + "12", borderRadius: 14, padding: "12px 16px" }}>
+            <div style={{ fontSize: 13, color: T.text, fontStyle: "italic", lineHeight: 1.5 }}>
+              {MOTIV(profile.name)[Math.floor(Date.now() / 60000) % MOTIV(profile.name).length]}
+            </div>
           </div>
         </>) : (<>
-          <div style={{ fontSize:48, marginBottom:8 }}>🎉</div>
-          <div style={{ fontSize:20, fontWeight:800, color:T.text }}>Journée terminée !</div>
-          <div style={{ fontSize:13, color:T.muted, marginTop:6 }}>{vapedMins} min vapotées · Limite : {todayLimit} min</div>
-          {vapedMins < todayLimit && <div style={{ fontSize:13, color:T.ok, marginTop:6, fontWeight:700 }}>💪 {todayLimit - vapedMins} min économisées !</div>}
+          <div style={{ fontSize: 52, marginBottom: 10 }}>🎉</div>
+          <div style={{ fontSize: 22, fontWeight: 800, color: T.text, marginBottom: 6 }}>Journée terminée !</div>
+          <div style={{ fontSize: 13, color: T.muted }}>{vapedMins} min vapotées · Limite : {todayLimit} min</div>
+          {vapedMins < todayLimit && (
+            <div style={{ fontSize: 13, color: T.ok, marginTop: 8, fontWeight: 700 }}>
+              💪 {todayLimit - vapedMins} min économisées !
+            </div>
+          )}
         </>)}
       </div>
 
       {/* Skip button */}
       {isVaping && (
-        <div style={{ marginBottom:12 }}>
-          <button onClick={skipSession} style={{ background:T.card, color:T.accent, border:`2px solid ${T.accent}55`, borderRadius:14, padding:"14px 20px", fontSize:15, fontWeight:700, width:"100%", cursor:"pointer", boxShadow: T.dark ? "0 2px 8px rgba(0,0,0,0.3)" : "0 1px 4px rgba(0,0,0,0.08)" }}>
+        <div style={{ marginBottom: 14 }}>
+          <button onClick={skipSession} style={{
+            background: T.card, color: T.accent, border: `2px solid ${T.accent}44`,
+            borderRadius: 16, padding: "14px 20px", fontSize: 14, fontWeight: 700,
+            width: "100%", cursor: "pointer",
+            boxShadow: T.dark ? "0 4px 16px rgba(0,0,0,0.3)" : "0 2px 8px rgba(0,0,0,0.08)",
+          }}>
             ⏭️ Je ne peux pas vapoter maintenant
           </button>
-          <div style={{ textAlign:"center", fontSize:12, color:T.muted, marginTop:5 }}>Le temps sera redistribué sur les sessions suivantes (pénalité : 25%)</div>
+          <div style={{ textAlign: "center", fontSize: 11, color: T.muted, marginTop: 6 }}>
+            Le temps sera redistribué (pénalité : 25 %)
+          </div>
         </div>
       )}
 
-      {/* Stats */}
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, marginBottom:12 }}>
+      {/* Stats Grid */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 14 }}>
         {[
-          { l:"Sessions",  v:`${statDone}/${cfg.sessions}`, icon:"✅" },
-          { l:"Vapotées",  v:`${vapedMins} min`,            icon:"💨" },
-          { l:"Reportées", v:statSkipped,                   icon:"⏭️" },
-        ].map(({ l, v, icon }) => (
-          <div key={l} style={{ background:T.card, borderRadius:14, padding:"14px 8px", textAlign:"center", boxShadow: T.dark ? "0 2px 8px rgba(0,0,0,0.3)" : "0 1px 4px rgba(0,0,0,0.07)", border:`1px solid ${T.border}` }}>
-            <div style={{ fontSize:21 }}>{icon}</div>
-            <div style={{ fontSize:17, fontWeight:800, color:T.text, marginTop:2 }}>{v}</div>
-            <div style={{ fontSize:11, color:T.muted, marginTop:2 }}>{l}</div>
+          { l:"Sessions",  v:`${statDone}/${cfg.sessions}`, emoji:"✅" },
+          { l:"Vapotées",  v:`${vapedMins}min`,             emoji:"💨" },
+          { l:"Reportées", v:`${statSkipped}`,              emoji:"⏭️" },
+        ].map(({ l, v, emoji }) => (
+          <div key={l} style={{
+            background: T.card, borderRadius: 18, padding: "16px 8px", textAlign: "center",
+            boxShadow: T.dark ? "0 4px 16px rgba(0,0,0,0.3)" : "0 2px 8px rgba(0,0,0,0.07)",
+            border: `1px solid ${T.border}`,
+          }}>
+            <div style={{ fontSize: 22, marginBottom: 4 }}>{emoji}</div>
+            <div style={{ fontSize: 16, fontWeight: 800, color: T.text }}>{v}</div>
+            <div style={{ fontSize: 11, color: T.muted, marginTop: 2 }}>{l}</div>
           </div>
         ))}
       </div>
 
-      {/* Day progress */}
-      <div style={{ background:T.card, borderRadius:14, padding:16, border:`1px solid ${T.border}` }}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
-          <span style={{ fontSize:14, fontWeight:600, color:T.text }}>Progression du jour</span>
-          <span style={{ fontSize:13, fontWeight:700, color:T.accent }}>{Math.round(progress * 100)}%</span>
+      {/* Day Progress */}
+      <div style={{
+        background: T.card, borderRadius: 18, padding: "16px 18px",
+        border: `1px solid ${T.border}`,
+        boxShadow: T.dark ? "0 4px 16px rgba(0,0,0,0.2)" : "0 2px 8px rgba(0,0,0,0.06)",
+      }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Progression du jour</span>
+          <span style={{ fontSize: 14, fontWeight: 800, color: T.ok }}>{Math.round(progress * 100)}%</span>
         </div>
-        <div style={{ height:8, background:T.border, borderRadius:999, overflow:"hidden" }}>
-          <div style={{ height:"100%", width:`${progress * 100}%`, background:T.ok, borderRadius:999, transition:"width 0.5s ease" }} />
+        <div style={{ height: 10, background: T.border, borderRadius: 999, overflow: "hidden" }}>
+          <div style={{ height: "100%", width: `${progress * 100}%`, background: `linear-gradient(90deg, ${T.ok}, ${T.ok}cc)`, borderRadius: 999, transition: "width 0.5s ease", boxShadow: `0 0 8px ${T.ok}66` }} />
         </div>
-        <div style={{ fontSize:12, color:T.muted, marginTop:8 }}>
+        <div style={{ fontSize: 11, color: T.muted, marginTop: 10 }}>
           Semaine {cfg.week} · Limite : {todayLimit} min/jour · {RHYTHMS[profile.rhythm].emoji} {RHYTHMS[profile.rhythm].label}
         </div>
       </div>
+
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.6; transform: scale(1.15); }
+        }
+      `}</style>
     </div>
   );
 }
@@ -474,35 +834,52 @@ function HomeView({ isVaping, secsLeft, secsToNext, curSess, nextSess, sched, st
 // ─── TODAY VIEW ───────────────────────────────────────────────────────────────
 function TodayView({ sched, nowMin, effEnd, T }) {
   return (
-    <div style={{ padding:"12px 16px" }}>
-      <div style={{ fontSize:16, fontWeight:700, color:T.text, marginBottom:4 }}>Planning du jour</div>
-      <div style={{ fontSize:13, color:T.muted, marginBottom:16 }}>Vos fenêtres de vapotage et périodes d'abstention</div>
+    <div style={{ padding: "16px 16px" }}>
+      <div style={{ fontSize: 18, fontWeight: 700, color: T.text, marginBottom: 2 }}>Planning du jour</div>
+      <div style={{ fontSize: 13, color: T.muted, marginBottom: 20 }}>Vos fenêtres de vapotage et périodes d'abstention</div>
 
       {sched.map((s, i) => {
-        const end   = effEnd(s);
-        const dur   = s.baseDur + s.bonus;
-        const isNow = s.status === "pending" && nowMin >= s.start && nowMin < end;
-        const isDone = s.status === "done", isSkip = s.status === "skipped";
+        const end    = effEnd(s);
+        const dur    = s.baseDur + s.bonus;
+        const isNow  = s.status === "pending" && nowMin >= s.start && nowMin < end;
+        const isDone = s.status === "done";
+        const isSkip = s.status === "skipped";
         const isMiss = s.status === "pending" && nowMin >= end;
 
-        const col = isNow ? T.ok : isDone ? T.ok : isSkip ? "#f59e0b" : isMiss ? T.danger : T.muted;
-        const bg  = isNow ? T.ok+"18" : isDone ? T.ok+"10" : isSkip ? "#f59e0b18" : isMiss ? T.danger+"10" : T.card;
-        const icon = isNow?"🟢" : isDone?"✅" : isSkip?"⏭️" : isMiss?"❌" : "⏳";
+        const col  = isNow ? T.ok : isDone ? T.ok : isSkip ? "#f59e0b" : isMiss ? T.danger : T.muted;
+        const bg   = isNow ? T.ok+"18" : isDone ? T.ok+"10" : isSkip ? "#f59e0b14" : isMiss ? T.danger+"10" : T.card;
         const badge = isNow?"EN COURS" : isDone?"TERMINÉ" : isSkip?"REPORTÉ" : isMiss?"MANQUÉ" : "À VENIR";
+        const sessionEmoji = isNow?"🟢" : isDone?"✅" : isSkip?"⏭️" : isMiss?"❌" : "⏳";
 
         return (
-          <div key={s.id} style={{ display:"flex", gap:10, marginBottom:8, alignItems:"stretch" }}>
-            <div style={{ display:"flex", flexDirection:"column", alignItems:"center", width:18 }}>
-              <div style={{ width:12, height:12, borderRadius:"50%", background:col, flexShrink:0, marginTop:14 }} />
-              {i < sched.length - 1 && <div style={{ flex:1, width:2, background:T.border, minHeight:16, marginTop:2 }} />}
+          <div key={s.id} style={{ display: "flex", gap: 12, marginBottom: 10, alignItems: "stretch" }}>
+            {/* Timeline */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: 20, paddingTop: 16 }}>
+              <div style={{ width: 14, height: 14, borderRadius: "50%", background: col, flexShrink: 0, boxShadow: isNow ? `0 0 8px ${col}` : "none" }} />
+              {i < sched.length - 1 && <div style={{ flex: 1, width: 2, background: T.border, minHeight: 20, marginTop: 4, borderRadius: 1 }} />}
             </div>
-            <div style={{ flex:1, background:bg, borderRadius:14, padding:"12px 14px", border: isNow ? `2px solid ${T.ok}55` : `1px solid ${T.border}` }}>
-              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
+
+            {/* Card */}
+            <div style={{
+              flex: 1, background: bg, borderRadius: 18, padding: "14px 16px",
+              border: isNow ? `2px solid ${T.ok}66` : `1px solid ${T.border}`,
+              boxShadow: isNow ? `0 4px 16px ${T.ok}22` : "none",
+            }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <div>
-                  <div style={{ fontWeight:700, color:T.text, fontSize:15 }}>{icon} {hhmm(s.start)} – {hhmm(end)}</div>
-                  <div style={{ fontSize:13, color:T.muted, marginTop:2 }}>{dur} min{s.bonus > 0 ? <span style={{ color:"#f59e0b" }}> (+{s.bonus} récupérées)</span> : ""}</div>
+                  <div style={{ fontWeight: 700, color: T.text, fontSize: 15 }}>
+                    {sessionEmoji} {hhmm(s.start)} – {hhmm(end)}
+                  </div>
+                  <div style={{ fontSize: 12, color: T.muted, marginTop: 3 }}>
+                    {dur} min
+                    {s.bonus > 0 && <span style={{ color: "#f59e0b", fontWeight: 600 }}> (+{s.bonus} récupérées)</span>}
+                  </div>
                 </div>
-                <div style={{ background:col+"25", color:col, borderRadius:999, padding:"3px 10px", fontSize:10, fontWeight:700, flexShrink:0 }}>{badge}</div>
+                <div style={{
+                  background: col + "25", color: col, borderRadius: 999,
+                  padding: "4px 12px", fontSize: 10, fontWeight: 700, flexShrink: 0,
+                  letterSpacing: 0.5,
+                }}>{badge}</div>
               </div>
             </div>
           </div>
@@ -516,32 +893,54 @@ function TodayView({ sched, nowMin, effEnd, T }) {
 function PlanView({ plan, cfg, profile, T }) {
   const r = RHYTHMS[profile.rhythm];
   return (
-    <div style={{ padding:"12px 16px" }}>
-      <div style={{ fontSize:16, fontWeight:700, color:T.text, marginBottom:2 }}>Programme de réduction</div>
-      <div style={{ fontSize:13, color:T.muted, marginBottom:6 }}>{r.emoji} {r.label} · {r.desc}</div>
-      <div style={{ background:r.colorHex+"18", border:`1px solid ${r.colorHex}44`, borderRadius:12, padding:"10px 14px", marginBottom:16, fontSize:13, color:T.text }}>
-        Départ : <strong>{profile.startMins} min/jour</strong> · Objectif : <strong>0 min</strong> en <strong>{plan.length} semaines</strong>
+    <div style={{ padding: "16px 16px" }}>
+      <div style={{ fontSize: 18, fontWeight: 700, color: T.text, marginBottom: 4 }}>Programme de réduction</div>
+      <div style={{ fontSize: 13, color: T.muted, marginBottom: 12 }}>{r.emoji} {r.label} · {r.desc}</div>
+
+      <div style={{
+        background: r.colorHex + "18", border: `1.5px solid ${r.colorHex}44`,
+        borderRadius: 16, padding: "14px 16px", marginBottom: 20, fontSize: 13, color: T.text,
+      }}>
+        Départ : <strong style={{ color: r.colorHex }}>{profile.startMins} min/jour</strong> · Objectif : <strong>0 min</strong> en <strong>{plan.length} semaines</strong>
       </div>
 
       {plan.map(({ w, mins }) => {
         const isCur = w === cfg.week, isDone = w < cfg.week;
-        const pct = Math.round((mins / plan[0].mins) * 100);
+        const pct = Math.round((mins / (plan[0]?.mins || 1)) * 100);
         return (
-          <div key={w} style={{ background: isCur ? T.accent+"18" : isDone ? T.ok+"10" : T.card, border:`2px solid ${isCur ? T.accent+"55" : isDone ? T.ok+"33" : T.border}`, borderRadius:14, padding:"12px 16px", marginBottom:8 }}>
-            <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:6 }}>
-              <div style={{ width:28, height:28, borderRadius:"50%", background: isDone ? T.ok : isCur ? T.accent : T.border, color: isDone||isCur ? T.accentText : T.muted, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:800, flexShrink:0 }}>
+          <div key={w} style={{
+            background: isCur ? T.accent + "18" : isDone ? T.ok + "10" : T.card,
+            border: `2px solid ${isCur ? T.accent + "66" : isDone ? T.ok + "33" : T.border}`,
+            borderRadius: 18, padding: "14px 16px", marginBottom: 10,
+            boxShadow: isCur ? `0 4px 20px ${T.accent}22` : "none",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+              <div style={{
+                width: 36, height: 36, borderRadius: "50%",
+                background: isDone ? T.ok : isCur ? T.accent : T.border,
+                color: isDone || isCur ? "#fff" : T.muted,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: isDone ? 16 : 13, fontWeight: 800, flexShrink: 0,
+                boxShadow: isCur ? `0 4px 12px ${T.accent}55` : "none",
+              }}>
                 {isDone ? "✓" : w}
               </div>
-              <div style={{ flex:1 }}>
-                <div style={{ fontWeight:700, color:T.text, fontSize:14 }}>Semaine {w} {w === plan.length ? "🎉" : ""}</div>
-                {isCur && <div style={{ fontSize:11, color:T.accent, fontWeight:600 }}>← Vous êtes ici</div>}
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 700, color: T.text, fontSize: 14 }}>
+                  Semaine {w} {w === plan.length ? "🎉" : ""}
+                </div>
+                {isCur && <div style={{ fontSize: 11, color: T.accent, fontWeight: 600 }}>← Vous êtes ici</div>}
               </div>
-              <div style={{ fontWeight:800, fontSize:16, color: mins===0 ? T.ok : isCur ? T.accent : isDone ? T.ok : T.muted }}>
+              <div style={{ fontWeight: 800, fontSize: 16, color: mins === 0 ? T.ok : isCur ? T.accent : isDone ? T.ok : T.muted }}>
                 {mins === 0 ? "🎉 Libre !" : `${mins} min`}
               </div>
             </div>
-            <div style={{ height:5, background:T.border, borderRadius:999, overflow:"hidden" }}>
-              <div style={{ height:"100%", width:`${pct}%`, background: mins===0 ? T.ok : isCur ? T.accent : isDone ? T.ok+"99" : T.muted+"44", borderRadius:999 }} />
+            <div style={{ height: 6, background: T.border, borderRadius: 999, overflow: "hidden" }}>
+              <div style={{
+                height: "100%", width: `${pct}%`, borderRadius: 999,
+                background: mins === 0 ? T.ok : isCur ? T.accent : isDone ? T.ok + "99" : T.muted + "44",
+                transition: "width 0.4s ease",
+              }} />
             </div>
           </div>
         );
@@ -552,63 +951,84 @@ function PlanView({ plan, cfg, profile, T }) {
 
 // ─── SETTINGS VIEW ────────────────────────────────────────────────────────────
 function SettingsView({ editCfg, setEditCfg, apply, profile, setProfile, themeName, setThemeName, T }) {
-  const Slider = ({ label, k, min, max, step=1, fmt }) => (
-    <div style={{ marginBottom:18 }}>
-      <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
-        <label style={{ fontSize:14, fontWeight:600, color:T.text }}>{label}</label>
-        <span style={{ fontSize:14, fontWeight:700, color:T.accent }}>{fmt ? fmt(editCfg[k]) : editCfg[k]}</span>
+  const Slider = ({ label, k, min, max, step = 1, fmt }) => (
+    <div style={{ marginBottom: 20 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+        <label style={{ fontSize: 14, fontWeight: 600, color: T.text }}>{label}</label>
+        <span style={{ fontSize: 14, fontWeight: 700, color: T.accent }}>{fmt ? fmt(editCfg[k]) : editCfg[k]}</span>
       </div>
       <input type="range" min={min} max={max} step={step} value={editCfg[k]}
         onChange={e => setEditCfg(p => ({ ...p, [k]: +e.target.value }))}
-        style={{ width:"100%", accentColor:T.accent }} />
-      <div style={{ display:"flex", justifyContent:"space-between", fontSize:11, color:T.muted, marginTop:2 }}>
+        style={{ width: "100%", accentColor: T.accent, height: 6 }} />
+      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: T.muted, marginTop: 4 }}>
         <span>{fmt ? fmt(min) : min}</span><span>{fmt ? fmt(max) : max}</span>
       </div>
     </div>
   );
 
   const Sec = ({ title, children }) => (
-    <div style={{ background:T.card, borderRadius:16, padding:18, border:`1px solid ${T.border}`, marginBottom:12 }}>
-      <div style={{ fontSize:13, fontWeight:700, color:T.text, marginBottom:14 }}>{title}</div>
+    <div style={{
+      background: T.card, borderRadius: 20, padding: "18px 18px",
+      border: `1px solid ${T.border}`, marginBottom: 14,
+      boxShadow: T.dark ? "0 4px 16px rgba(0,0,0,0.2)" : "0 2px 8px rgba(0,0,0,0.06)",
+    }}>
+      <div style={{ fontSize: 13, fontWeight: 700, color: T.text, marginBottom: 16 }}>{title}</div>
       {children}
     </div>
   );
 
   return (
-    <div style={{ padding:"12px 16px" }}>
-      <div style={{ fontSize:16, fontWeight:700, color:T.text, marginBottom:16 }}>Réglages</div>
+    <div style={{ padding: "16px 16px" }}>
+      <div style={{ fontSize: 18, fontWeight: 700, color: T.text, marginBottom: 18 }}>Réglages</div>
 
       {/* Themes */}
       <Sec title="🎨 Thème de l'application">
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(4, 1fr)", gap:8 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10 }}>
           {Object.entries(THEMES).map(([k, th]) => (
-            <button key={k} onClick={() => setThemeName(k)} style={{ border:`2px solid ${themeName===k ? T.accent : T.border}`, borderRadius:12, padding:"8px 4px", background:th.bg, cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", gap:4, transition:"all 0.15s" }}>
-              <div style={{ width:24, height:24, borderRadius:"50%", background:th.accent, border:`2px solid ${th.border}` }} />
-              <div style={{ fontSize:9, fontWeight:600, color:th.text, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", width:"100%", textAlign:"center" }}>{th.name}</div>
-              {th.dark && <div style={{ fontSize:8, color:th.muted }}>Sombre</div>}
+            <button key={k} onClick={() => setThemeName(k)} style={{
+              border: `2px solid ${themeName === k ? T.accent : T.border}`,
+              borderRadius: 14, padding: "10px 4px",
+              background: th.bg, cursor: "pointer",
+              display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
+              transition: "all 0.15s",
+              boxShadow: themeName === k ? `0 4px 12px ${T.accent}44` : "none",
+              transform: themeName === k ? "scale(1.05)" : "scale(1)",
+            }}>
+              <div style={{ width: 28, height: 28, borderRadius: "50%", background: th.accent, border: `2px solid ${th.border}66` }} />
+              <div style={{ fontSize: 9, fontWeight: 700, color: th.text, textAlign: "center", width: "100%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", paddingInline: 2 }}>{th.name}</div>
             </button>
           ))}
         </div>
       </Sec>
 
-      <Sec title="⏱️ Sessions">
-        <Slider label="Sessions par jour" k="sessions" min={2} max={12} fmt={v => `${v}x`} />
+      <Sec title="⏱️ Sessions par jour">
+        <Slider label="Sessions" k="sessions" min={2} max={12} fmt={v => `${v}x`} />
       </Sec>
 
       <Sec title="🌅 Horaires">
         <Slider label="Réveil"  k="wake"  min={4}  max={12} fmt={v => `${pad2(v)}:00`} />
-        <Slider label="Coucher" k="sleep" min={18} max={26} fmt={v => `${pad2(v%24)}:00`} />
+        <Slider label="Coucher" k="sleep" min={18} max={26} fmt={v => `${pad2(v % 24)}:00`} />
       </Sec>
 
       <Sec title="📅 Semaine actuelle">
         <Slider label="Semaine" k="week" min={1} max={50} fmt={v => `Semaine ${v}`} />
       </Sec>
 
-      <button onClick={apply} style={{ background:T.accent, color:T.accentText, border:"none", borderRadius:14, padding:"15px 24px", fontSize:16, fontWeight:700, width:"100%", cursor:"pointer", marginBottom:12 }}>
-        ✅ Enregistrer
+      <button onClick={apply} style={{
+        background: T.accent, color: T.accentText, border: "none",
+        borderRadius: 16, padding: "16px 24px", fontSize: 16, fontWeight: 700,
+        width: "100%", cursor: "pointer", marginBottom: 12,
+        boxShadow: `0 4px 20px ${T.accent}55`,
+      }}>
+        ✅ Enregistrer les réglages
       </button>
 
-      <button onClick={() => { if (window.confirm("Recommencer l'évaluation depuis le début ?")) setProfile(null); }} style={{ background:"transparent", color:T.danger, border:`2px solid ${T.danger}44`, borderRadius:14, padding:"12px 24px", fontSize:14, fontWeight:600, width:"100%", cursor:"pointer" }}>
+      <button onClick={() => { if (window.confirm("Recommencer l'évaluation depuis le début ?")) setProfile(null); }} style={{
+        background: "transparent", color: T.danger,
+        border: `2px solid ${T.danger}44`, borderRadius: 16,
+        padding: "13px 24px", fontSize: 14, fontWeight: 600,
+        width: "100%", cursor: "pointer",
+      }}>
         🔄 Refaire l'évaluation
       </button>
     </div>

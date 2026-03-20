@@ -1,0 +1,19 @@
+{
+  "name": "VapeDown",
+  "short_name": "VapeDown",
+  "description": "Réduction progressive du vapotage. Par A.Kamara.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#050805",
+  "background_color": "#050805",
+  "lang": "fr",
+  "icons": [
+    { "src": "/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "J'ai vapé", "url": "/log", "icons": [{ "src": "/icons/192.png", "sizes": "96x96" }] },
+    { "name": "Mon plan", "url": "/plan",  "icons": [{ "src": "/icons/192.png", "sizes": "96x96" }] }
+  ]
+}
