@@ -487,8 +487,7 @@ export default function VapeControl() {
   const [notifOn,   setNotifOn]   = useState(false);
   const [themeName, setThemeName] = useState(() => LS.get("vd_theme", "midnight"));
   const [editCfg,   setEditCfg]   = useState(() => LS.get("vd_cfg", { sessions:6, wake:7, sleep:23, week:1 }));
-  const notifSent  = useRef(new Set());
-  const firstMount = useRef(true);
+  const notifSent = useRef(new Set());
   const T = THEMES[themeName];
 
   // Persist state to localStorage
@@ -512,17 +511,16 @@ export default function VapeControl() {
   useEffect(() => {
     if (!profile) return;
 
-    // On first mount, restore today's schedule if it exists
-    if (firstMount.current) {
-      firstMount.current = false;
-      const stored = LS.get("vd_sched", null);
-      if (stored && stored.date === todayKey() && Array.isArray(stored.sched) && stored.sched.length > 0) {
-        setSched(stored.sched);
-        return;
-      }
+    // Always try to restore today's stored schedule first.
+    // applySettings deletes vd_sched only when cfg truly changed,
+    // so if nothing changed the stored schedule is preserved.
+    const stored = LS.get("vd_sched", null);
+    if (stored && stored.date === todayKey() && Array.isArray(stored.sched) && stored.sched.length > 0) {
+      setSched(stored.sched);
+      return;
     }
 
-    // Otherwise regenerate (new day, new profile, or cfg changed)
+    // No valid stored schedule — generate a fresh one (new day, new profile, or real cfg change)
     const plan = genPlan(profile.startMins, RHYTHMS[profile.rhythm].pct);
     const limit = plan[cfg.week - 1]?.mins ?? 0;
     setSched(buildSchedule({ limit, sessions: cfg.sessions, wake: cfg.wake, sleep: cfg.sleep }));
@@ -591,9 +589,13 @@ export default function VapeControl() {
     push("⏭️ Session reportée", futIds.length > 0 ? `+${bonus} min redistribuées.` : "Aucune session restante.");
   };
 
+  const cfgChanged = (a, b) =>
+    a.sessions !== b.sessions || a.wake !== b.wake || a.sleep !== b.sleep || a.week !== b.week;
+
   const applySettings = () => {
-    firstMount.current = false; // Force schedule regeneration on next cfg change
-    LS.del("vd_sched");
+    if (cfgChanged(editCfg, cfg)) {
+      LS.del("vd_sched"); // Invalidate cached schedule only when something really changed
+    }
     setCfg(editCfg);
     setTab("home");
   };
@@ -664,7 +666,7 @@ export default function VapeControl() {
         {tab === "home"     && <HomeView     {...{isVaping,secsLeft,secsToNext,curSess,nextSess,sched,statDone,statSkipped,vapedMins,todayLimit,cfg,profile,plan,dayDone,skipSession,notifOn,askNotif,effEnd,T}} />}
         {tab === "today"    && <TodayView    {...{sched,nowMin,effEnd,T}} />}
         {tab === "plan"     && <PlanView     {...{plan,cfg,profile,T}} />}
-        {tab === "settings" && <SettingsView {...{editCfg,setEditCfg,apply:applySettings,resetAll,themeName,setThemeName,T}} />}
+        {tab === "settings" && <SettingsView {...{editCfg,setEditCfg,cfg,apply:applySettings,resetAll,themeName,setThemeName,T}} />}
       </div>
 
       {/* Bottom Nav */}
@@ -989,7 +991,9 @@ function PlanView({ plan, cfg, profile, T }) {
 }
 
 // ─── SETTINGS VIEW ────────────────────────────────────────────────────────────
-function SettingsView({ editCfg, setEditCfg, apply, resetAll, themeName, setThemeName, T }) {
+function SettingsView({ editCfg, setEditCfg, cfg, apply, resetAll, themeName, setThemeName, T }) {
+  const hasChanges = editCfg.sessions !== cfg.sessions || editCfg.wake !== cfg.wake ||
+                     editCfg.sleep !== cfg.sleep || editCfg.week !== cfg.week;
   const Slider = ({ label, k, min, max, step = 1, fmt }) => (
     <div style={{ marginBottom: 20 }}>
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
@@ -1053,11 +1057,13 @@ function SettingsView({ editCfg, setEditCfg, apply, resetAll, themeName, setThem
         <Slider label="Semaine" k="week" min={1} max={50} fmt={v => `Semaine ${v}`} />
       </Sec>
 
-      <button onClick={apply} style={{
-        background: T.accent, color: T.accentText, border: "none",
-        borderRadius: 16, padding: "16px 24px", fontSize: 16, fontWeight: 700,
-        width: "100%", cursor: "pointer", marginBottom: 12,
-        boxShadow: `0 4px 20px ${T.accent}55`,
+      <button onClick={apply} disabled={!hasChanges} style={{
+        background: hasChanges ? T.accent : T.border,
+        color: hasChanges ? T.accentText : T.muted,
+        border: "none", borderRadius: 16, padding: "16px 24px", fontSize: 16, fontWeight: 700,
+        width: "100%", cursor: hasChanges ? "pointer" : "not-allowed", marginBottom: 12,
+        boxShadow: hasChanges ? `0 4px 20px ${T.accent}55` : "none",
+        transition: "all 0.2s",
       }}>
         ✅ Enregistrer les réglages
       </button>
